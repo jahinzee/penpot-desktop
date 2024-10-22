@@ -1,9 +1,9 @@
 ![Penpot Desktop](https://europe1.discourse-cdn.com/standard20/uploads/penpot/original/2X/b/bc6c290e4566bc12f8afa162bae80ffb20a7c7f5.jpeg)
-> This is unofficial software
-
 
 # Penpot Desktop
-Penpot Desktop delivers a desktop-like experience for Penpot users with the additional of integrating tabs to conveniently traverse back and forth between projects. Offline support is available through the select your own instance option in settings, as well as the theme settings that may be applied to either the entire desktop app or simply the Penpot dashboard.
+Penpot Desktop is an unofficial desktop application for the open-source design tool, Penpot.
+
+It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to conveniently traverse back and forth between projects. Offline support is available through the "select your own instance" option, and theme settings can be applied to either the entire desktop app or just the Penpot dashboard.
 
 ## Quick Links
 Endusers:
