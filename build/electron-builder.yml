@@ -16,8 +16,8 @@ mac:
     - "dmg" # Installer
     - "zip" # Required for auto updater
 
-dmg:
-  sign: true
+# dmg:
+#   sign: true
 
 # Windows
 win:
@@ -44,11 +44,11 @@ linux:
   target:
     - deb # Debian/Ubuntu
     - rpm # RHEL/Fedora
-    - freebsd # BSD
-    - pacman # For Arch
+    # - freebsd # BSD
+    # - pacman # For Arch
     - AppImage # Universal
-    - snap # Snapcraft Store - Can't build arm version on amd64 machines(comment Snap out if you plan to)
+    # - snap # Snapcraft Store - Can't build arm version on amd64 machines(comment Snap out if you plan to)
 
-snap:
-  allowNativeWayland: true
-  confinement: "strict"
+# snap:
+#   allowNativeWayland: true
+#   confinement: "strict"
