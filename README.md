@@ -6,15 +6,7 @@ Penpot Desktop is an unofficial desktop application for the open-source design t
 It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to conveniently traverse back and forth between projects. Offline support is available through the "select your own instance" option, and theme settings can be applied to either the entire desktop app or just the Penpot dashboard.
 
 ## Quick Links
-Endusers:
- - [FAQ](https://sudovanilla.org/docs/penpot-desktop/FAQ.md)
- - Install [[Windows](https://sudovanilla.org/docs/penpot-desktop/install/WINDOWS.md), [Mac](https://sudovanilla.org/docs/penpot-desktop/install/MAC.md), [Linux](https://sudovanilla.org/docs/penpot-desktop/install/LINUX.md)]
- - [System Requirements](https://sudovanilla.org/docs/penpot-desktop/install/INSTALL.md#system-requirements)
- - [Changelog](https://sudovanilla.org/docs/penpot-desktop/CHANGELOG.md)
-
-Developers:
- - [FAQ for Developers](https://sudovanilla.org/docs/penpot-desktop/FAQ-for-developers.md)
- - [Build Instructions](https://sudovanilla.org/docs/penpot-desktop/BUILD.md)
+- [Old documentation](https://sudovanilla.org/docs/penpot-desktop/introduction/) - The old documentation for Penpot Desktop. New, updated documentation is in the works.
 
 ## Building
 ### Requirements
