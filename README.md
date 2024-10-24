@@ -8,25 +8,19 @@ It delivers a desktop-like experience for Penpot users with the addition of inte
 ## Quick Links
 - [Old documentation](https://sudovanilla.org/docs/penpot-desktop/introduction/) - The old documentation for Penpot Desktop. New, updated documentation is in the works.
 
-## Building
-### Requirements
- - [NodeJS](https://nodejs.org/) v20
- - [Python](https://www.python.org/)
- - Supported OS:
-    - Windows 10 or newer
-    - macOS
-    - Linux
+## Development and Building
 
-### Install Packages
-Before building anything, packages need to be installed first by your package manager, NodeJS should come with `npm` by default:
-```bash
-npm install
-```
-
-> Other package managers such as Yarn, PNPM, or Bun also work.
-
-### Run Build
-Once packages are installed, with no issues, you can run the build command:
-```bash
-npm run build
-```
+1. Ensure the environment meets the following requirements:
+    - Supported OS:
+        - Windows 10 or newer
+        - macOS
+        - Linux
+    - [NodeJS](https://nodejs.org/) v20
+    - [Python](https://www.python.org/)
+    - [Git](https://git-scm.com/) (optional)
+1. Clone the repository or download the source code.
+1. Navigate to the project's directory.
+1. Run `npm ci` to install packages.  
+   *Other package managers such as Yarn, PNPM, or Bun should work as well.*
+1. (Optional) Run `npm run dev` to start the application in development mode. This will open a new window with the application running.
+1. Run `npm run build` to build the application. By default, it will build for the current OS and architecture, but you can pass flags to build for other platforms. See the [Electron Builder documentation](https://www.electron.build/cli) for more information.
