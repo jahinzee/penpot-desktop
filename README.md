@@ -6,6 +6,7 @@ Penpot Desktop is an unofficial desktop application for the open-source design t
 It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to conveniently traverse back and forth between projects. Offline support is available through the "select your own instance" option, and theme settings can be applied to either the entire desktop app or just the Penpot dashboard.
 
 ## Quick Links
+- [Penpot](https://penpot.app/) - The official website for Penpot.
 - [Old documentation](https://sudovanilla.org/docs/penpot-desktop/introduction/) - The old documentation for Penpot Desktop. New, updated documentation is in the works.
 
 ## Development and Building
