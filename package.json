@@ -7,7 +7,7 @@
     "electron"
   ],
   "main": "src/process/index.js",
-  "homepage": "https://ark.sudovanilla.org/Korbs/Penpot-Desktop/",
+  "homepage": "https://github.com/author-more/penpot-desktop",
   "keywords": [
     "design",
     "prototyping",
@@ -15,15 +15,9 @@
     "graphics"
   ],
   "bugs": {
-    "url": "https://ark.sudovanilla.org/Korbs/Penpot-Desktop/issues",
-    "email": "korbs@sudovanilla.org"
+    "url": "https://github.com/author-more/penpot-desktop/issues",
+    "email": "penpotdesktop@authormore.com"
   },
-  "funding": [
-    {
-      "type": "individual",
-      "url": "https://liberapay.com/SudoVanilla/"
-    }
-  ],
   "scripts": {
     "start": "npm run dev",
     "build": "electron-builder --config build/electron-builder.yml",
