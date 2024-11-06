@@ -48,8 +48,8 @@ module.exports = {
     ipcMain.on('MaximizeWindow', () => {mainWindow.maximize()})
     ipcMain.on('UnmaximizeWindow', () => {mainWindow.restore()})
     ipcMain.on('MinimizeWindow', () => {mainWindow.minimize()})
-    ipcMain.on('OpenHelp', () => {shell.openExternal('https://sudovanilla.com/docs/penpot-desktop/')})
-    ipcMain.on('OpenOffline', () => {shell.openExternal('https://sudovanilla.com/docs/penpot-desktop/features/offline-use/')})
+    ipcMain.on('OpenHelp', () => {shell.openExternal('https://github.com/author-more/penpot-desktop/wiki')})
+    ipcMain.on('OpenOffline', () => {shell.openExternal('https://github.com/author-more/penpot-desktop/wiki/Self%E2%80%90hosting')})
 
     if (process.platform === 'darwin') {
       // Move Tabs when entering or existing fullscreen on macOS
