@@ -1,5 +1,5 @@
 productName: "Penpot Desktop"
-appId: "org.sudovanilla.penpot"
+appId: "com.authormore.penpotdesktop"
 asar: true
 
 # Update Server
@@ -37,8 +37,8 @@ nsis:
 # Linux
 linux:
   category: Graphics
-  maintainer: "org.sudovanilla.penpot"
-  vendor: "SudoVanilla"
+  maintainer: "com.authormore.penpotdesktop"
+  vendor: "Author More"
   description: "A Desktop-Like Experience"
   icon: "build/icon.png"
   target:

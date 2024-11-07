@@ -161,7 +161,7 @@ module.exports = {
                     label: 'Source Code',
                     click: async () => {
                         const { shell } = require('electron')
-                        await shell.openExternal('https://sudovanilla.com/code/Korbs/Penpot-Desktop/-/tree/main')
+                        await shell.openExternal('https://github.com/author-more/penpot-desktop')
                     }
                 }
             ]
