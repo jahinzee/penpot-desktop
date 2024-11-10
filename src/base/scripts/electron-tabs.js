@@ -8,6 +8,7 @@ const Instance = localStorage.getItem('Instance')
 setTimeout(() => {
   // Select tab-group
   const TabGroup = document.querySelector("tab-group")
+  const reloadButton = document.querySelector("#reload-tab")
 
   // New Tab - When "+" is clicked
   TabGroup.setDefaultTab({
@@ -43,5 +44,10 @@ setTimeout(() => {
         tab.setTitle(newTitle)
       })
     }
+  })
+
+  reloadButton.addEventListener("click", () => {
+    const tab = TabGroup?.getActiveTab()
+    tab?.webview.reload()
   })
 }, 1000)
