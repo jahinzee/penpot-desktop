@@ -37,7 +37,6 @@ module.exports = {
       icon: global.AppIcon,
       webPreferences: {
         preload: path.join(app.getAppPath(), 'src/process/preload.js'),
-        sandbox: false, // App doens't load properly if enabled
         webviewTag: true
       }
     })

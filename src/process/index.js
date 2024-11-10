@@ -6,6 +6,7 @@ const {MessageChannel, ProcessManager} = require('electron-re')
 // Import Files
 let MainWindow = require('./window')
 
+app.enableSandbox()
 // Launch
 app.whenReady().then(() => {
     autoUpdater.checkForUpdatesAndNotify()
