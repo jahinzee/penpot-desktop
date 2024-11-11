@@ -9,50 +9,60 @@
             --tag-hover-background: #34393c !important;
             --button-font-size: 15px !important;
             --button-background: none !important;
-            --button-color: #696a6c !important;
+            --button-color: #fff !important;
             --button-hover-background: #303236 !important;
             --button-hover-color: #fff !important;
-            --button-border-radius: 50% !important;
+            --button-border-radius: 6px !important;
             --button-cursor: pointer !important;
             --badge-background: #383a3e !important;
             --badge-color: #fff !important;
             --close-button-visibility: visible !important;
-            --tab-height: 41px;
+            --tab-height: 42px;
         }
         * {cursor: default !important}
         .nav {
             -webkit-app-region: drag;
             color: white !important;
             display: flex !important;
+            align-items: center;
             position: fixed !important;
             top: 0px !important;
             z-index: 10 !important;
             border: none !important;
             height: var(--tab-height);
             width: calc(100% - var(--navBarWF));
+
+            margin-left: 2.25rem;
         }
         .tab {
             -webkit-app-region: no-drag;
             display: flex;
             flex: none;
-            border-radius: 4px;
+            border-radius: 6px;
             margin: 4px;
+            padding: 5px 10px;
             height: 80%;
+            min-height: 32px;
             transition: 0.4s border;
             border: 1px transparent solid !important;
         }
         .tab:not(.active):hover {
             background: #3f4247 !important;
             color: white !important;
-            border: 1px var(--ActiveColor25) solid !important;
+            border: 1px rgba(255,255,255,.2) solid !important;
         }
         .tab.active {
-            border: 1px var(--ActiveColor50) solid !important;
+            padding: 5px 10px;
+            border: 1px rgba(255,255,255,.1) solid !important;
             transition: 0.4s border;
+        }
+        .tab.visible:not(.active) + .tab.visible:not(.active) {
+            padding-left: 10px;
         }
         .tabs {
             height: var(--tab-height);
             display: flex;
+            align-items: center;
             overflow-x: scroll;
         }
         .tabs::-webkit-scrollbar {
@@ -69,6 +79,10 @@
             padding: 5px !important;
             display: flex !important;
             align-items: center !important;
+        }
+        .buttons button {
+            width: 32px;
+            height: 32px;
         }
         webview {
             height: calc(100% - var(--tab-height));

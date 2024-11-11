@@ -6,6 +6,7 @@ module.exports = {
             setTimeout(() => {
                 mainWindow.webContents.executeJavaScript(`document.querySelector("body").style.backgroundColor = 'transparent'`)
                 mainWindow.webContents.executeJavaScript(`document.querySelector("tab-group").shadowRoot.querySelector("nav").style.left = '80px'`)
+                mainWindow.webContents.executeJavaScript(`document.querySelector(".controls").style.left = '75px'`)
             }, 1500);
         }
         if (process.platform === 'linux') {
