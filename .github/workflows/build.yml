@@ -31,3 +31,17 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Save artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.os }}
+          path: |
+            dist/latest*.yml
+            dist/*.exe
+            dist/*.AppImage
+            dist/*.dmg
+            dist/*.rpm
+            dist/*.deb
+            dist/*.zip
+            dist/*.blockmap
+          retention-days: 1
