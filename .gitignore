@@ -4,3 +4,5 @@ dist/
 .vscode/
 .DS_Store
 .yarn/
+build/flatpak/.flatpak-builder
+build/flatpak/build

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2024 Berk Elyesa Yıldırım <beryesa@sayafe.org> -->
+<component type="desktop-application">
+    <id>com.authormore.Penpot-Desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>AGPL-3.0-or-later</project_license>
+    <name>Penpot Desktop</name>
+    <summary>Design and code beautiful products together</summary>
+    <developer id="com.authormore">
+        <name>Belar</name>
+    </developer>
+    <description>
+        <p>
+            Penpot Desktop is an unofficial desktop application for the open-source UI/UX design tool, Penpot.
+        </p>
+        <p>
+          It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to 
+          conveniently traverse back and forth between projects. Offline support is available through the 
+          &quot;select your own instance&quot; option, and theme settings can be applied to either the 
+          entire desktop app or just the Penpot dashboard.
+        </p>
+    </description>
+    <launchable type="desktop-id">com.authormore.Penpot-Desktop.desktop</launchable>
+    <provides>
+        <mediatype>application/x-penpot</mediatype>
+    </provides>
+    <content_rating type="oars-1.1"/>
+    <url type="homepage">https://www.penpot.app</url>
+    <url type="help">https://help.penpot.app/</url>
+    <url type="bugtracker">https://github.com/author-more/penpot-desktop.git</url>
+    <recommends>
+        <display_length compare="ge">768</display_length>
+        <internet>always</internet>
+    </recommends>
+    <supports>
+        <control>pointing</control>
+        <control>keyboard</control>
+        <control>tablet</control>
+        <internet>offline-only</internet>
+    </supports>
+    <releases>
+        <release version="v0.6.0" date="2024-12-04">
+            <description>
+                <p>Features:</p>
+                <ul>
+                    <li>Added navigation requests action prompt.</li>
+                    <li>Added a question system dialog for navigation requests that can't be resolved based on the lists of 
+                    allowed origins and URLs. It lets the user decide how a link that can't be predefined should be handled 
+                    (e.g. links in plug-ins and custom OpenID providers), with options to cancel, open, or open in a 
+                    browser (depending on the request).</li>
+                </ul>
+            </description>
+        </release>
+        <release version="v0.5.0" date="2024-12-02">
+            <description>
+                <p>Features:</p>
+                <ul>
+                    <li>Added dynamic instance support.</li>
+                    <li>The Penpot instance, after set in the settings, updates without the need to reload or restart the app.</li>
+                </ul>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Fixed OpenID login buttons (Login with Google/GitHub/GitLab) to trigger a login flow.</li>
+                </ul>
+                <p>Internal:</p>
+                <ul>
+                    <li>Added type checking</li>
+                </ul>
+            </description>
+        </release>
+        <release version="v0.4.2" date="2024-11-25"/>
+        <release version="v0.4.1" date="2024-11-19">
+            <description>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Fixed links to open in a new tab (e.g. "Open in a new tab" from the project menu, Preview 
+                    mode) or a default browser, instead of a generic new window.</li>
+                    <li>Fixed UI events to consequently interact with the tab bar e.g. showing "no open tabs" page when closing the last tab.</li>
+                </ul>
+                <p>Security:</p>
+                <ul>
+                    <li>Fixed in-app navigation to have a limited range. 
+                    Navigation within the app is now limited to a set of allowed addresses.</li>
+                    <li>Fixed the webview tag options to go through a verification process.</li>
+                </ul>
+                <p>Internal:</p>
+                <ul>
+                    <li>Refactored tabs management to use events instead of time-based execution.</li>
+                    <li>Updated development dependencies.</li>
+                </ul>
+            </description>
+        </release>
+        <release version="v0.4.0" date="2024-11-11">
+            <description>
+                <p>New features:</p>
+                <ul>
+                    <li>Added reload button.</li>
+                    <li>Tab reload functionality is now available under a button in the top section of the app 
+                    (to the left of the tab bar).</li>
+                </ul>
+                <p>Security:</p>
+                <ul>
+                    <li>Enabled process sandboxing.</li>
+                    <li>Tab reload functionality is now available under a button in the top section of the app 
+                    (to the left of the tab bar).</li>
+                </ul>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Fixed resource links (Help, Self-host) to link to the up-to-date resources.</li>
+                    <li>Fixed tabs to not jitter during user interaction, e.g. mouse hover, tab switching.</li>
+                </ul>
+                <p>Updates:</p>
+                <ul>
+                    <li>Updated project details e.g. app id, repository links.</li>
+                </ul>
+                <p>Internal:</p>
+                <ul>
+                    <li>Restored security warnings.</li>
+                    <li>The app now displays security warnings when running in development mode.</li>
+                    <li>Added build artifacts upload.</li>
+                    <li> The CI pipeline now stores build artifacts, which are then available for download on a 
+                    job's report page. The artifacts are intended for testing purposes, not for production use.</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.3.2" date="2024-10-30">
+            <description>
+                <p>Improvements:</p>
+                <ul>
+                    <li>Updated Electron to version 33.x.</li>
+                </ul>
+                <p>Documentation:</p>
+                <ul>
+                    <li>Updated the project's description.</li>
+                    <li>Fixed link(s) to the old documentation. </li>
+                    <li>Updated development and build instructions.</li>
+                    <li>Removed outdated information.</li>
+                </ul>
+                <p>Internal:</p>
+                <ul>
+                    <li>Updated build dependencies: electron-builder, electron-updater.</li>
+                    <li>Updated other dependencies.</li>
+                </ul>
+            </description>
+        </release>
+        <release version="0.0.1" date="2024-10-22">
+            <description>
+                <p>This is a legacy release, it serves as an archive and a reference for those who have 
+                previously used this version of the application and for future development.</p>
+                <p>Important Notes:</p>
+                <ul>
+                    <li>This release includes packages in formats that will be supported in future versions. Additional formats may be added based on demand.</li>
+                    <li>The packages are unsigned and may trigger warnings during installation.</li>
+                    <li>The packages are outdated and may contain security vulnerabilities.</li>
+                </ul>
+                <p>Note: This release is not recommended for use in production environments.</p>
+            </description>
+        </release>
+    </releases>
+</component>

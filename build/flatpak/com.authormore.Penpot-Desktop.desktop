@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Penpot Desktop
+Exec=run.sh %U
+Terminal=false
+Type=Application
+Icon=com.authormore.Penpot-Desktop
+StartupWMClass=penpot-desktop
+Comment=A Desktop-Like Experience
+Categories=Graphics;
+MimeType=application/x-penpot;
