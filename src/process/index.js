@@ -4,6 +4,7 @@ const {MessageChannel, ProcessManager} = require('electron-re')
 // ProcessManager.openWindow()
 
 // Import Files
+require('./navigation')
 let MainWindow = require('./window')
 
 app.enableSandbox()

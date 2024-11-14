@@ -51,3 +51,23 @@ setTimeout(() => {
     tab?.webview.reload()
   })
 }, 1000)
+
+window.api.onOpenTab((href) => {
+  const TabGroup = document.querySelector("tab-group")
+  TabGroup.addTab({
+    src: href,
+    active: true,
+    webviewAttributes: {
+      preload: Preload,
+      allowpopups: true,
+    },
+    ready: function (tab) {
+      TabGroup.on("tab-removed", (tab, tabGroup) => {ATWC()})
+      const webview = tab.webview
+      webview.addEventListener('page-title-updated', () => {
+        const newTitle = webview.getTitle()
+        tab.setTitle(newTitle)
+      })
+    }
+  })
+})
