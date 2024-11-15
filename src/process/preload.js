@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld("api", {
       "MinimizeWindow",
       "OpenHelp",
       "OpenOffline",
+      "registerInstance"
     ];
 
     if (validChannels.includes(channel)) {

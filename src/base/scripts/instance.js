@@ -13,6 +13,7 @@ function InstanceSave() { // If save button is clicked
 function InstanceGet() { // Runs on start
     let InstanceStore = localStorage.getItem('Instance')
     if (InstanceStore) {
+        window.api.send('registerInstance', InstanceStore)
         setTimeout(() => {
             document.querySelector("input#InstanceField").value = InstanceStore
         }, 0o500);
