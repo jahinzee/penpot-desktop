@@ -10,19 +10,19 @@ function ToggleSettings() {
 
 // Detect if there are no tabs
 setTimeout(() => {
-    document.querySelector("body > sl-include:nth-child(4) > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
-    document.querySelector("body > sl-include:nth-child(4) > tab-group").shadowRoot.querySelector("div > nav > div.buttons > button").addEventListener('click', function(){ATWC()})
+    document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
+    document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.buttons > button").addEventListener('click', function(){ATWC()})
 }, 2000)
 function ATWC() {
-    var element = document.querySelector("body > sl-include:nth-child(4) > tab-group").shadowRoot.querySelector("div > nav > div.tabs > *")
+    var element = document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > *")
     if (typeof(element) != 'undefined' && element != null)
     {
         document.querySelector('.no-tabs-exist').style.display = 'none'
-        document.querySelector("body > sl-include:nth-child(4) > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
+        document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
     }
     else {
         document.querySelector('.no-tabs-exist').style.display = 'inherit'
-        document.querySelector("body > sl-include:nth-child(4) > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
+        document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
     }
 }
 

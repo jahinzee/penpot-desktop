@@ -94,7 +94,7 @@ module.exports = {
                 label: 'Open Tab Developer Tools',
                 accelerator: 'CmdOrCtrl+Shift+D',
                 click: () => {
-                    mainWindow.webContents.executeJavaScript(`document.querySelector("body > sl-include:nth-child(4) > tab-group").shadowRoot.querySelector("div > div > webview.visible").openDevTools()`)
+                    mainWindow.webContents.executeJavaScript(`document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > div > webview.visible").openDevTools()`)
                 }},
                 { type: 'separator' },
                 { role: 'resetZoom' },
