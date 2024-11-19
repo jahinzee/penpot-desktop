@@ -1,5 +1,6 @@
 const { app, ipcMain, shell } = require("electron");
 const { URL } = require("url");
+const { join } = require("path");
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
 const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
@@ -58,4 +59,35 @@ app.on("web-contents-created", (event, contents) => {
       event.preventDefault();
     }
   });
+
+  contents.on('will-attach-webview', (event, webPreferences, params) => {
+    webPreferences.allowRunningInsecureContent = false
+    webPreferences.contextIsolation = true
+    webPreferences.enableBlinkFeatures = ''
+    webPreferences.experimentalFeatures = false
+    webPreferences.nodeIntegration = false
+    webPreferences.nodeIntegrationInSubFrames = false
+    webPreferences.nodeIntegrationInWorker = false
+    webPreferences.sandbox = true
+    webPreferences.webSecurity = true
+
+    const allowedPreloadScriptPath = join(app.getAppPath(), "src/base/scripts/webviews/preload.js")
+    const isAllowedPreloadScript = !webPreferences.preload || webPreferences.preload === allowedPreloadScriptPath
+    
+    if (!isAllowedPreloadScript) {
+      console.warn(`[WARNING] [app.will-attach-webview] Forbidden preload script.`);
+      delete webPreferences.preload
+    }
+
+    const parsedSrc = new URL(params.src)
+    const isAllowedOrigin = [
+      ...ALLOWED_INTERNAL_ORIGINS,
+      ...userInstances,
+    ].includes(parsedSrc.origin);
+
+    if (!isAllowedOrigin) {
+      console.warn(`[ERROR] [app.will-attach-webview] Forbidden origin.`);
+      event.preventDefault()
+    }
+  })
 });
