@@ -5,7 +5,7 @@
  * @param {string} includeSelector - The CSS selector of the sl-include element.
  * @returns {Promise<Element|null>} A promise that resolves to the found element or null if not found.
  */
-export function getIncludedElement(selector, includeSelector) {
+function getIncludedElement(selector, includeSelector) {
   return new Promise((resolve) => {
     const includeElement = document.querySelector(includeSelector);
     if (!includeElement) {
@@ -22,4 +22,27 @@ export function getIncludedElement(selector, includeSelector) {
       resolve(element);
     });
   });
+}
+
+
+/**
+ * @template T
+ * @typedef {new (...args: any[]) => T} Class<T>
+*/
+/**
+ * Retrieves an element from the DOM based on the provided selector and expected type.
+ * 
+ * @template E
+ * @param {string} selector 
+ * @param {Class<E>} type
+ * @param {ParentNode | null | undefined} parent
+ * @return {E | null}
+ */
+function typedQuerySelector(selector, type, parent = document) {
+  const element = parent?.querySelector(selector);
+  if(element instanceof type) {
+    return element
+  }
+
+  return null
 }

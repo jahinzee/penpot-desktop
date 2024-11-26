@@ -15,6 +15,7 @@ const ALLOWED_EXTERNAL_URLS = Object.freeze([
   "https://github.com/penpot/penpot",
 ]);
 
+/** @type {string[]} */
 const userInstances = [];
 
 ipcMain.on("registerInstance", (event, instance) => {
