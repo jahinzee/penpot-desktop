@@ -1,3 +1,5 @@
+// @ts-nocheck The file requires a review, before dedicating time to add quality types.
+
 // Set the title of the tab name
 /// Instead of the tab name being "PROJECT_NAME - Penpot", this script will remove the " - Penpot" portion.
 function SetTitleToDash() {

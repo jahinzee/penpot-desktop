@@ -1,21 +1,25 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("api", {
-  send: (channel, data) => {
-    let validChannels = [
-      "updateApp",
-      "ReloadApp",
-      "MaximizeWindow",
-      "UnmaximizeWindow",
-      "MinimizeWindow",
-      "OpenHelp",
-      "OpenOffline",
-      "registerInstance"
-    ];
+contextBridge.exposeInMainWorld(
+  "api",
+  /** @type typeof api */ ({
+    send: (channel, data) => {
+      let validChannels = [
+        "updateApp",
+        "ReloadApp",
+        "MaximizeWindow",
+        "UnmaximizeWindow",
+        "MinimizeWindow",
+        "OpenHelp",
+        "OpenOffline",
+        "registerInstance",
+      ];
 
-    if (validChannels.includes(channel)) {
-      ipcRenderer.send(channel, data);
-    }
-  },
-  onOpenTab: (callback) => ipcRenderer.on('open-tab', (_event, value) => callback(value))
-});
+      if (validChannels.includes(channel)) {
+        ipcRenderer.send(channel, data);
+      }
+    },
+    onOpenTab: (callback) =>
+      ipcRenderer.on("open-tab", (_event, value) => callback(value)),
+  })
+);

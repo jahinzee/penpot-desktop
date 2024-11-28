@@ -1,6 +1,10 @@
-import { getIncludedElement } from "./dom.js";
+/**
+ * @typedef {import("electron-tabs").TabGroup} TabGroup
+ * @typedef {import("electron-tabs").Tab} Tab
+ * @typedef {import("electron").WebviewTag} WebviewTag
+ */
 
-const instance = localStorage.getItem("Instance");
+const instance = localStorage.getItem("Instance") || undefined;
 
 const PRELOAD_PATH = "./scripts/webviews/preload.js";
 const DEFAULT_TAB_OPTIONS = Object.freeze({
@@ -14,7 +18,7 @@ const DEFAULT_TAB_OPTIONS = Object.freeze({
 });
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const tabGroup = await getIncludedElement("tab-group", "#include-tabs");
+  const tabGroup = await getTabGroup();
 
   tabGroup?.on("tab-removed", () => {
     ATWC();
@@ -26,7 +30,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.api.onOpenTab(async (href) => {
-  const tabGroup = await getIncludedElement("tab-group", "#include-tabs");
+  const tabGroup = await getTabGroup();
 
   tabGroup?.addTab({
     ...DEFAULT_TAB_OPTIONS,
@@ -39,18 +43,27 @@ async function prepareTabReloadButton() {
     "#reload-tab",
     "#include-controls"
   );
-  const tabGroup = await getIncludedElement("tab-group", "#include-tabs");
+  const tabGroup = await getTabGroup();
 
   reloadButton?.addEventListener("click", () => {
     const tab = tabGroup?.getActiveTab();
-    tab?.webview.reload();
+    /** @type {WebviewTag} */ (tab?.webview).reload();
   });
 }
 
+/**
+ * @param {Tab} tab
+ */
 function tabReadyHandler(tab) {
-  const webview = tab.webview;
+  const webview = /** @type {WebviewTag} */ (tab.webview);
   webview.addEventListener("page-title-updated", () => {
     const newTitle = webview.getTitle();
     tab.setTitle(newTitle);
   });
+}
+
+async function getTabGroup() {
+  return /** @type {TabGroup | null} */ (
+    await getIncludedElement("tab-group", "#include-tabs")
+  );
 }

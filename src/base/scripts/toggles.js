@@ -1,40 +1,73 @@
+/**
+ * @typedef {import('@shoelace-style/shoelace').SlAlert} SlAlert
+ */
+
 // Settings
 function ToggleSettings() {
-    var SettingsUI = document.querySelector("#settings")
-    if (SettingsUI.style.display === "flex") {
-        SettingsUI.style.display = "none"
-    } else {
-        SettingsUI.style.display = "flex"
-    }
+  const settingsUi = typedQuerySelector("#settings", HTMLElement);
+  if (settingsUi) {
+    const isVisible = settingsUi.style.display === "flex";
+    settingsUi.style.display = isVisible ? "none" : "flex";
+  }
 }
 
 // Detect if there are no tabs
-setTimeout(() => {
-    document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
-    document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.buttons > button").addEventListener('click', function(){ATWC()})
-}, 2000)
-function ATWC() {
-    var element = document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > *")
-    if (typeof(element) != 'undefined' && element != null)
-    {
-        document.querySelector('.no-tabs-exist').style.display = 'none'
-        document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
-    }
-    else {
-        document.querySelector('.no-tabs-exist').style.display = 'inherit'
-        document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.tabs > div > span.tab-close").addEventListener('click', function(){ATWC()})
-    }
-}
+setTimeout(async () => {
+  const tabGroup = await getTabGroup();
+  const tabClose = tabGroup?.shadowRoot?.querySelector(
+    "div > nav > div.tabs > div > span.tab-close"
+  );
+  const button = tabGroup?.shadowRoot?.querySelector(
+    "div > nav > div.buttons > button"
+  );
+  tabClose?.addEventListener("click", () => ATWC());
+  button?.addEventListener("click", () => ATWC());
+}, 2000);
 
+async function ATWC() {
+  const tabGroup = await getTabGroup();
+  const tabs = tabGroup?.shadowRoot?.querySelector("div > nav > div.tabs > *");
+  const hasTabs = typeof tabs != "undefined" && tabs != null;
+
+  const noTabsExistPage = typedQuerySelector(".no-tabs-exist", HTMLElement);
+  const tabClose = tabGroup?.shadowRoot?.querySelector(
+    "div > nav > div.tabs > div > span.tab-close"
+  );
+
+  if (noTabsExistPage) {
+    noTabsExistPage.style.display = hasTabs ? "none" : "inherit";
+  }
+  tabClose?.addEventListener("click", () => ATWC());
+}
 
 // Alerts
 /// Docs: https://shoelace.style/getting-started/usage#methods
 /// No Instance
-function ShowNoInstance() {document.querySelector('#noinstance').show()}
-function HideNoInstance() {document.querySelector('#noinstance').hide()}
+function ShowNoInstance() {
+  const noInstanceAlert = getNoInstanceAlert();
+  if (noInstanceAlert) {
+    noInstanceAlert.show();
+  }
+}
+
+function HideNoInstance() {
+  const noInstanceAlert = getNoInstanceAlert();
+  if (noInstanceAlert) {
+    noInstanceAlert.hide();
+  }
+}
+
+function getNoInstanceAlert() {
+  // Type guard would require a type import. As a compromise, we use a type guard for a HTMLElement and assume the type as SlAlert.
+  return /** @type {SlAlert | null}*/ (
+    typedQuerySelector("#noinstance", HTMLElement)
+  );
+}
 
 setTimeout(() => {
-    if (document.querySelector("#InstanceField").value === "") {
-        ShowNoInstance()
-    }
+  const instanceField = typedQuerySelector("#InstanceField", HTMLInputElement);
+  const isInstanceFieldEmpty = instanceField?.value === "";
+  if (isInstanceFieldEmpty) {
+    ShowNoInstance();
+  }
 }, 1000);

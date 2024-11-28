@@ -52,11 +52,11 @@ module.exports = {
 
     if (process.platform === 'darwin') {
       // Move Tabs when entering or existing fullscreen on macOS
-      mainWindow.on('enter-full-screen', (e, cmd) => {mainWindow.webContents.executeJavaScript(`document.querySelector("tab-group").shadowRoot.querySelector("nav").style.left = '0px'`)})
-      mainWindow.on('leave-full-screen', (e, cmd) => {mainWindow.webContents.executeJavaScript(`document.querySelector("tab-group").shadowRoot.querySelector("nav").style.left = '80px'`)})
+      mainWindow.on('enter-full-screen', () => {mainWindow.webContents.executeJavaScript(`document.querySelector("tab-group").shadowRoot.querySelector("nav").style.left = '0px'`)})
+      mainWindow.on('leave-full-screen', () => {mainWindow.webContents.executeJavaScript(`document.querySelector("tab-group").shadowRoot.querySelector("nav").style.left = '80px'`)})
       // Fade Top Bar if the end-user leaves the window on macOS
-      mainWindow.on('blur', (e, cmd) => {mainWindow.webContents.executeJavaScript(`document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav").style.opacity = '0.5'`)})
-      mainWindow.on('focus', (e, cmd) => {mainWindow.webContents.executeJavaScript(`document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav").style.opacity = '1'`)})
+      mainWindow.on('blur', () => {mainWindow.webContents.executeJavaScript(`document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav").style.opacity = '0.5'`)})
+      mainWindow.on('focus', () => {mainWindow.webContents.executeJavaScript(`document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav").style.opacity = '1'`)})
     }
     
     // Other Functions
