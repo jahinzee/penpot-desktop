@@ -7,7 +7,7 @@ const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
   "https://penpot.app",
   "https://help.penpot.app",
   "https://design.penpot.app",
-  "https://early.penpot.app",
+  "https://early.penpot.dev",
 ]);
 const ALLOWED_EXTERNAL_URLS = Object.freeze([
   "https://community.penpot.app/",
