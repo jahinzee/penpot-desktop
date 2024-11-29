@@ -11,13 +11,13 @@
         <script src="./scripts/theme.js"></script>
         <script src="./scripts/toggles.js"></script>
     </head> 
-    <body onload="ThemeCheck(); InstanceGet()">
+    <body onload="ThemeCheck();">
         <drag></drag>
         <sl-include id="include-controls" src="./components/controls.html"></sl-include>
         <sl-include src="./components/titlebar.html"></sl-include>
         <sl-include src="./components/splash.html"></sl-include>
         <sl-include id="include-tabs" src="./components/tabs.html"></sl-include>
-        <sl-include src="./components/settings.html"></sl-include>
+        <sl-include id="include-settings" src="./components/settings.html"></sl-include>
 
         <div class="no-tabs-exist" style="display: none;">
             <img src="./assets/penpot-logo/logo-white.png"/>
@@ -25,8 +25,5 @@
             <p>Add a new tab to start making awesome things.</p>
             <button onclick='document.querySelector("body > #include-tabs > tab-group").shadowRoot.querySelector("div > nav > div.buttons > button").click(); ATWC()'>Create a tab</button>
         </div>
-
-        <!-- Alerts-->
-        <sl-include class="alert-modal" src="./components/alerts/no-instance.html"></sl-include>
     </body>
 </html>
