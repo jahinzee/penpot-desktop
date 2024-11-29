@@ -22,11 +22,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   tabGroup?.on("tab-removed", () => {
     ATWC();
   });
+  tabGroup?.on("tab-added", () => {
+    ATWC();
+  });
 
   prepareTabReloadButton();
 });
 
 window.api.onOpenTab(openTab);
+
+async function resetTabs() {
+  const tabGroup = await getTabGroup();
+  tabGroup?.eachTab((tab) => tab.close(false));
+  openTab();
+}
 
 /**
  * @param {string =} href
@@ -46,10 +55,14 @@ async function setDefaultTab(href) {
 async function openTab(href) {
   const tabGroup = await getTabGroup();
 
-  tabGroup?.addTab({
-    ...DEFAULT_TAB_OPTIONS,
-    ...(href ? { src: href } : {}),
-  });
+  tabGroup?.addTab(
+    href
+      ? {
+          ...DEFAULT_TAB_OPTIONS,
+          src: href,
+        }
+      : undefined
+  );
 }
 
 async function prepareTabReloadButton() {

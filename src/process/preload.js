@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld(
         "OpenHelp",
         "OpenOffline",
         "registerInstance",
+        "removeInstance",
       ];
 
       if (validChannels.includes(channel)) {
