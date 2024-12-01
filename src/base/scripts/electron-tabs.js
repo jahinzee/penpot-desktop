@@ -4,11 +4,10 @@
  * @typedef {import("electron").WebviewTag} WebviewTag
  */
 
-const instance = localStorage.getItem("Instance") || undefined;
-
+const DEFAULT_INSTANCE = "https://design.penpot.app/";
 const PRELOAD_PATH = "./scripts/webviews/preload.js";
 const DEFAULT_TAB_OPTIONS = Object.freeze({
-  src: instance,
+  src: DEFAULT_INSTANCE,
   active: true,
   webviewAttributes: {
     preload: PRELOAD_PATH,
@@ -23,20 +22,48 @@ window.addEventListener("DOMContentLoaded", async () => {
   tabGroup?.on("tab-removed", () => {
     ATWC();
   });
-  tabGroup?.setDefaultTab(DEFAULT_TAB_OPTIONS);
-  tabGroup?.addTab();
+  tabGroup?.on("tab-added", () => {
+    ATWC();
+  });
 
   prepareTabReloadButton();
 });
 
-window.api.onOpenTab(async (href) => {
+window.api.onOpenTab(openTab);
+
+async function resetTabs() {
+  const tabGroup = await getTabGroup();
+  tabGroup?.eachTab((tab) => tab.close(false));
+  openTab();
+}
+
+/**
+ * @param {string =} href
+ */
+async function setDefaultTab(href) {
   const tabGroup = await getTabGroup();
 
-  tabGroup?.addTab({
+  tabGroup?.setDefaultTab({
     ...DEFAULT_TAB_OPTIONS,
-    src: href,
+    ...(href ? { src: href } : {}),
   });
-});
+}
+
+/**
+ * @param {string =} href
+ */
+async function openTab(href) {
+  const tabGroup = await getTabGroup();
+
+  tabGroup?.addTab(
+    href
+      ? {
+          ...DEFAULT_TAB_OPTIONS,
+          src: href,
+        }
+      : undefined
+  );
+}
 
 async function prepareTabReloadButton() {
   const reloadButton = await getIncludedElement(

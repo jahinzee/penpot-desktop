@@ -7,7 +7,7 @@ const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
   "https://penpot.app",
   "https://help.penpot.app",
   "https://design.penpot.app",
-  "https://early.penpot.app",
+  "https://early.penpot.dev",
 ]);
 const ALLOWED_EXTERNAL_URLS = Object.freeze([
   "https://community.penpot.app/",
@@ -15,15 +15,25 @@ const ALLOWED_EXTERNAL_URLS = Object.freeze([
   "https://github.com/penpot/penpot",
 ]);
 
-/** @type {string[]} */
-const userInstances = [];
+/** @type {Set<string>} */
+const userInstances = new Set();
 
 ipcMain.on("registerInstance", (event, instance) => {
   try {
     const url = new URL(instance);
-    userInstances.push(url.origin);
+    userInstances.clear();
+    userInstances.add(url.origin);
   } catch (error) {
     console.error(`[ERROR] [IPC.registerInstance] Failed with: ${instance}`);
+  }
+});
+
+ipcMain.on("removeInstance", (event, instance) => {
+  try {
+    const url = new URL(instance);
+    userInstances.delete(url.origin);
+  } catch (error) {
+    console.error(`[ERROR] [IPC.removeInstance] Failed with: ${instance}`);
   }
 });
 

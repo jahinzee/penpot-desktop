@@ -1,79 +1,89 @@
-function InstanceSave() {
-  // If save button is clicked
-  const instanceField = typedQuerySelector("input#InstanceField", HTMLInputElement)
+const INSTANCE_STORE_KEY = "Instance";
+const INSTANCE_EVENTS = Object.freeze({
+  REGISTER: "registerInstance",
+  REMOVE: "removeInstance",
+});
 
-  if (instanceField) {
-    const instance = instanceField.value || "";
-    localStorage.setItem("Instance", instance);
+window.addEventListener("DOMContentLoaded", async () => {
+  const savedInstance = await registerSavedInstance();
+
+  await setDefaultTab(savedInstance);
+  openTab(savedInstance);
+  prepareSaveButton();
+});
+
+async function prepareSaveButton() {
+  const { instanceSaveButton } = await getInstanceSettingsForm();
+
+  instanceSaveButton?.addEventListener("click", (event) => {
+    const target = event.target;
+    const element = target instanceof HTMLElement ? target : null;
+    saveInstance(element);
+  });
+}
+
+/**
+ * @param {HTMLElement | null} trigger
+ */
+async function saveInstance(trigger) {
+  const isInputButton = trigger instanceof HTMLInputElement;
+  const { instanceField } = await getInstanceSettingsForm();
+  const instance = instanceField?.value;
+
+  if (instance) {
+    localStorage.setItem(INSTANCE_STORE_KEY, instance);
+    window.api.send(INSTANCE_EVENTS.REGISTER, instance);
+    await setDefaultTab(instance);
+  } else {
+    const savedInstance = localStorage.getItem(INSTANCE_STORE_KEY);
+    
+    if (savedInstance) {
+      window.api.send(INSTANCE_EVENTS.REMOVE, savedInstance);
+    }
+    
+    localStorage.removeItem(INSTANCE_STORE_KEY);
+    await setDefaultTab();
   }
 
-  const instanceSaveButton = typedQuerySelector("#InstanceSaveButton", HTMLInputElement)
-  if (instanceSaveButton) {
-    instanceSaveButton.style.backgroundColor = "#00ff89";
-    instanceSaveButton.setAttribute("value", "Saved!");
+  resetTabs();
+
+  if (isInputButton) {
+    trigger.style.backgroundColor = "#00ff89";
+    trigger.setAttribute("value", "Saved!");
     setTimeout(() => {
-      instanceSaveButton.style.backgroundColor = "#575151";
-      instanceSaveButton.setAttribute("value", "Save");
+      trigger.style.backgroundColor = "#575151";
+      trigger.setAttribute("value", "Save");
     }, 1200);
   }
 }
 
-function InstanceGet() {
-  // Runs on start
-  const InstanceStore = localStorage.getItem("Instance");
+async function registerSavedInstance() {
+  const savedInstance = localStorage.getItem(INSTANCE_STORE_KEY);
 
-  if (InstanceStore) {
-    window.api.send("registerInstance", InstanceStore);
-    setTimeout(() => {
-      const instanceField = typedQuerySelector("input#InstanceField", HTMLInputElement)
+  if (savedInstance) {
+    const { instanceField } = await getInstanceSettingsForm();
 
-      if (instanceField) {
-        instanceField.value = InstanceStore;
-      }
-    }, 0o500);
+    window.api.send(INSTANCE_EVENTS.REGISTER, savedInstance);
+
+    if (instanceField) {
+      instanceField.value = savedInstance;
+    }
+
+    return savedInstance;
   }
 }
 
-if (!localStorage.getItem("firstTime")) {
-  localStorage.setItem("Instance", "https://design.penpot.app/"); // If not set, by default on first launch, the app will be blank (to fix issue #3)
-  localStorage.setItem("firstTime", "true");
-  // setTimeout(() => {welcome()}, 2500)
-} else {
-}
-
-setTimeout(() => {
-  const instanceField = typedQuerySelector("input#InstanceField", HTMLInputElement)
-
-  if (instanceField) {
-    instanceField.value = localStorage.getItem("Instance") || "";
-  }
-}, 0o500);
-
-setTimeout(async () => {
-  const tabGroup = await getTabGroup();
-  const webview = /** @type {import("electron").WebviewTag | null} */ (
-    tabGroup?.shadowRoot?.querySelector("div > div > webview")
+async function getInstanceSettingsForm() {
+  const instanceField = await getIncludedElement(
+    "#instance-field",
+    "#include-settings",
+    HTMLInputElement
   );
-  const nav = typedQuerySelector("div > nav", HTMLElement, tabGroup?.shadowRoot)
-  if (webview?.src === "") {
-    webview.style.opacity = "0";
-    if (nav) {
-      nav.style.opacity = "0";
-    }
+  const instanceSaveButton = await getIncludedElement(
+    "#instance-save",
+    "#include-settings",
+    HTMLInputElement
+  );
 
-    console.log("You need to set an instance.");
-
-    const titlebarButton = typedQuerySelector("body > titlebar > div.actions > div > button:nth-child(2)", HTMLButtonElement);
-    const tdmWarnings = typedQuerySelector(".tdm-warnings", HTMLElement);
-    
-    if (titlebarButton) {
-      titlebarButton?.click();
-    }
-    
-    if (tdmWarnings) {
-      tdmWarnings.style.display = "inherit";
-    }
-  } else {
-    console.log("An instance is set.");
-  }
-}, 1500);
+  return { instanceField, instanceSaveButton };
+}
