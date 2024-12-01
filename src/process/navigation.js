@@ -9,6 +9,11 @@ const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
   "https://design.penpot.app",
   "https://early.penpot.dev",
 ]);
+const ALLOWED_AUTH_ORIGINS = Object.freeze([
+  "https://accounts.google.com",
+  "https://github.com",
+  "https://gitlab.com",
+]);
 const ALLOWED_EXTERNAL_URLS = Object.freeze([
   "https://community.penpot.app/",
   "https://www.youtube.com/c/Penpot", // Tutorials
@@ -63,6 +68,7 @@ app.on("web-contents-created", (event, contents) => {
     const parsedUrl = new URL(url);
     const isAllowedOrigin = [
       ...ALLOWED_INTERNAL_ORIGINS,
+      ...ALLOWED_AUTH_ORIGINS,
       ...userInstances,
     ].includes(parsedUrl.origin);
 
