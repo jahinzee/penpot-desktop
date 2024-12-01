@@ -50,14 +50,29 @@ app.on("web-contents-created", (event, contents) => {
       ...ALLOWED_INTERNAL_ORIGINS,
       ...userInstances,
     ].includes(parsedUrl.origin);
-    
+    const isAllowedExternal = ALLOWED_EXTERNAL_URLS.includes(parsedUrl.href);
+    const isAllowedNavigation = isAllowedOrigin || isAllowedExternal;
+
     if (isAllowedOrigin) {
       mainWindow.webContents.send("open-tab", parsedUrl.href);
+    } else {
+      console.warn(
+        `[WARNING] [app.web-contents-created.setWindowOpenHandler] Forbidden origin: ${parsedUrl.origin}`
+      );
     }
 
-    const isAllowedExternal = ALLOWED_EXTERNAL_URLS.includes(parsedUrl.href);
     if (isAllowedExternal) {
       shell.openExternal(parsedUrl.href);
+    } else {
+      console.warn(
+        `[WARNING] [app.web-contents-created.setWindowOpenHandler] Forbidden external URL: ${parsedUrl.href}`
+      );
+    }
+
+    if (!isAllowedNavigation) {
+      console.error(
+        `[ERROR] [app.web-contents-created.setWindowOpenHandler] Forbidden navigation.`
+      );
     }
 
     return { action: "deny" };
@@ -73,38 +88,53 @@ app.on("web-contents-created", (event, contents) => {
     ].includes(parsedUrl.origin);
 
     if (!isAllowedOrigin) {
+      console.error(
+        `[ERROR] [app.web-contents-created.will-navigate] Forbidden origin: ${parsedUrl.origin}`
+      );
+
       event.preventDefault();
     }
   });
 
-  contents.on('will-attach-webview', (event, webPreferences, params) => {
-    webPreferences.allowRunningInsecureContent = false
-    webPreferences.contextIsolation = true
-    webPreferences.enableBlinkFeatures = ''
-    webPreferences.experimentalFeatures = false
-    webPreferences.nodeIntegration = false
-    webPreferences.nodeIntegrationInSubFrames = false
-    webPreferences.nodeIntegrationInWorker = false
-    webPreferences.sandbox = true
-    webPreferences.webSecurity = true
+  contents.on("will-attach-webview", (event, webPreferences, params) => {
+    webPreferences.allowRunningInsecureContent = false;
+    webPreferences.contextIsolation = true;
+    webPreferences.enableBlinkFeatures = "";
+    webPreferences.experimentalFeatures = false;
+    webPreferences.nodeIntegration = false;
+    webPreferences.nodeIntegrationInSubFrames = false;
+    webPreferences.nodeIntegrationInWorker = false;
+    webPreferences.sandbox = true;
+    webPreferences.webSecurity = true;
 
-    const allowedPreloadScriptPath = join(app.getAppPath(), "src/base/scripts/webviews/preload.js")
-    const isAllowedPreloadScript = !webPreferences.preload || webPreferences.preload === allowedPreloadScriptPath
-    
+    const allowedPreloadScriptPath = join(
+      app.getAppPath(),
+      "src/base/scripts/webviews/preload.js"
+    );
+    const isAllowedPreloadScript =
+      !webPreferences.preload ||
+      webPreferences.preload === allowedPreloadScriptPath;
+
     if (!isAllowedPreloadScript) {
-      console.warn(`[WARNING] [app.will-attach-webview] Forbidden preload script.`);
-      delete webPreferences.preload
+      console.warn(
+        `[WARNING] [app.web-contents-created.will-attach-webview] Forbidden preload script.`
+      );
+
+      delete webPreferences.preload;
     }
 
-    const parsedSrc = new URL(params.src)
+    const parsedSrc = new URL(params.src);
     const isAllowedOrigin = [
       ...ALLOWED_INTERNAL_ORIGINS,
       ...userInstances,
     ].includes(parsedSrc.origin);
 
     if (!isAllowedOrigin) {
-      console.warn(`[ERROR] [app.will-attach-webview] Forbidden origin.`);
-      event.preventDefault()
+      console.error(
+        `[ERROR] [app.web-contents-created.will-attach-webview] Forbidden origin: ${parsedSrc.origin}`
+      );
+
+      event.preventDefault();
     }
-  })
+  });
 });
