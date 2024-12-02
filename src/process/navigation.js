@@ -3,11 +3,19 @@ const { URL } = require("url");
 const { join } = require("path");
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
-const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
-  "https://penpot.app",
-  "https://help.penpot.app",
+const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
   "https://design.penpot.app",
   "https://early.penpot.dev",
+]);
+const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
+  ...OFFICIAL_INSTANCE_ORIGINS,
+  "https://penpot.app",
+  "https://help.penpot.app",
+]);
+const ALLOWED_AUTH_ORIGINS = Object.freeze([
+  "https://accounts.google.com",
+  "https://github.com",
+  "https://gitlab.com",
 ]);
 const ALLOWED_EXTERNAL_URLS = Object.freeze([
   "https://community.penpot.app/",
@@ -45,14 +53,29 @@ app.on("web-contents-created", (event, contents) => {
       ...ALLOWED_INTERNAL_ORIGINS,
       ...userInstances,
     ].includes(parsedUrl.origin);
-    
+    const isAllowedExternal = ALLOWED_EXTERNAL_URLS.includes(parsedUrl.href);
+    const isAllowedNavigation = isAllowedOrigin || isAllowedExternal;
+
     if (isAllowedOrigin) {
       mainWindow.webContents.send("open-tab", parsedUrl.href);
+    } else {
+      console.warn(
+        `[WARNING] [app.web-contents-created.setWindowOpenHandler] Forbidden origin: ${parsedUrl.origin}`
+      );
     }
 
-    const isAllowedExternal = ALLOWED_EXTERNAL_URLS.includes(parsedUrl.href);
     if (isAllowedExternal) {
       shell.openExternal(parsedUrl.href);
+    } else {
+      console.warn(
+        `[WARNING] [app.web-contents-created.setWindowOpenHandler] Forbidden external URL: ${parsedUrl.href}`
+      );
+    }
+
+    if (!isAllowedNavigation) {
+      console.error(
+        `[ERROR] [app.web-contents-created.setWindowOpenHandler] Forbidden navigation.`
+      );
     }
 
     return { action: "deny" };
@@ -63,42 +86,84 @@ app.on("web-contents-created", (event, contents) => {
     const parsedUrl = new URL(url);
     const isAllowedOrigin = [
       ...ALLOWED_INTERNAL_ORIGINS,
+      ...ALLOWED_AUTH_ORIGINS,
       ...userInstances,
     ].includes(parsedUrl.origin);
 
     if (!isAllowedOrigin) {
+      console.error(
+        `[ERROR] [app.web-contents-created.will-navigate] Forbidden origin: ${parsedUrl.origin}`
+      );
+
       event.preventDefault();
     }
   });
 
-  contents.on('will-attach-webview', (event, webPreferences, params) => {
-    webPreferences.allowRunningInsecureContent = false
-    webPreferences.contextIsolation = true
-    webPreferences.enableBlinkFeatures = ''
-    webPreferences.experimentalFeatures = false
-    webPreferences.nodeIntegration = false
-    webPreferences.nodeIntegrationInSubFrames = false
-    webPreferences.nodeIntegrationInWorker = false
-    webPreferences.sandbox = true
-    webPreferences.webSecurity = true
+  contents.on("will-redirect", (event) => {
+    const internalOrigins = [...ALLOWED_INTERNAL_ORIGINS, ...userInstances];
+    const currentUrl = contents.getURL();
 
-    const allowedPreloadScriptPath = join(app.getAppPath(), "src/base/scripts/webviews/preload.js")
-    const isAllowedPreloadScript = !webPreferences.preload || webPreferences.preload === allowedPreloadScriptPath
-    
-    if (!isAllowedPreloadScript) {
-      console.warn(`[WARNING] [app.will-attach-webview] Forbidden preload script.`);
-      delete webPreferences.preload
+    // A new/empty tab doesn't have a URL before redirect to its initial page.
+    if (!currentUrl) {
+      return;
     }
 
-    const parsedSrc = new URL(params.src)
+    const parsedCurrentUrl = new URL(currentUrl);
+    const parsedUrl = new URL(event.url);
+    const isFromInternalOrigin = internalOrigins.includes(
+      parsedCurrentUrl.origin
+    );
+    const isToInternalOrigin = internalOrigins.includes(parsedUrl.origin);
+
+    if (!isFromInternalOrigin && isToInternalOrigin) {
+      // Prevents Electron from holding sessions for external services e.g. OpenID providers.
+      console.log("Clear non-instance origins data.");
+
+      contents.session.clearData({
+        excludeOrigins: [...OFFICIAL_INSTANCE_ORIGINS, ...userInstances],
+      });
+    }
+  });
+
+  contents.on("will-attach-webview", (event, webPreferences, params) => {
+    webPreferences.allowRunningInsecureContent = false;
+    webPreferences.contextIsolation = true;
+    webPreferences.enableBlinkFeatures = "";
+    webPreferences.experimentalFeatures = false;
+    webPreferences.nodeIntegration = false;
+    webPreferences.nodeIntegrationInSubFrames = false;
+    webPreferences.nodeIntegrationInWorker = false;
+    webPreferences.sandbox = true;
+    webPreferences.webSecurity = true;
+
+    const allowedPreloadScriptPath = join(
+      app.getAppPath(),
+      "src/base/scripts/webviews/preload.js"
+    );
+    const isAllowedPreloadScript =
+      !webPreferences.preload ||
+      webPreferences.preload === allowedPreloadScriptPath;
+
+    if (!isAllowedPreloadScript) {
+      console.warn(
+        `[WARNING] [app.web-contents-created.will-attach-webview] Forbidden preload script.`
+      );
+
+      delete webPreferences.preload;
+    }
+
+    const parsedSrc = new URL(params.src);
     const isAllowedOrigin = [
       ...ALLOWED_INTERNAL_ORIGINS,
       ...userInstances,
     ].includes(parsedSrc.origin);
 
     if (!isAllowedOrigin) {
-      console.warn(`[ERROR] [app.will-attach-webview] Forbidden origin.`);
-      event.preventDefault()
+      console.error(
+        `[ERROR] [app.web-contents-created.will-attach-webview] Forbidden origin: ${parsedSrc.origin}`
+      );
+
+      event.preventDefault();
     }
-  })
+  });
 });
