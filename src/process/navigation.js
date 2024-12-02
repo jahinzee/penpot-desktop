@@ -3,11 +3,14 @@ const { URL } = require("url");
 const { join } = require("path");
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
-const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
-  "https://penpot.app",
-  "https://help.penpot.app",
+const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
   "https://design.penpot.app",
   "https://early.penpot.dev",
+]);
+const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
+  ...OFFICIAL_INSTANCE_ORIGINS,
+  "https://penpot.app",
+  "https://help.penpot.app",
 ]);
 const ALLOWED_AUTH_ORIGINS = Object.freeze([
   "https://accounts.google.com",
@@ -93,6 +96,32 @@ app.on("web-contents-created", (event, contents) => {
       );
 
       event.preventDefault();
+    }
+  });
+
+  contents.on("will-redirect", (event) => {
+    const internalOrigins = [...ALLOWED_INTERNAL_ORIGINS, ...userInstances];
+    const currentUrl = contents.getURL();
+
+    // A new/empty tab doesn't have a URL before redirect to its initial page.
+    if (!currentUrl) {
+      return;
+    }
+
+    const parsedCurrentUrl = new URL(currentUrl);
+    const parsedUrl = new URL(event.url);
+    const isFromInternalOrigin = internalOrigins.includes(
+      parsedCurrentUrl.origin
+    );
+    const isToInternalOrigin = internalOrigins.includes(parsedUrl.origin);
+
+    if (!isFromInternalOrigin && isToInternalOrigin) {
+      // Prevents Electron from holding sessions for external services e.g. OpenID providers.
+      console.log("Clear non-instance origins data.");
+
+      contents.session.clearData({
+        excludeOrigins: [...OFFICIAL_INSTANCE_ORIGINS, ...userInstances],
+      });
     }
   });
 
