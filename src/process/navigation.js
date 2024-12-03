@@ -1,6 +1,7 @@
 const { app, ipcMain, shell, dialog } = require("electron");
 const { URL } = require("url");
 const { join } = require("path");
+const { toMultiline } = require("./string");
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
 const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
@@ -195,7 +196,7 @@ function showNavigationQuestion(url, { buttons, onCancel, onAllow, logLabel }) {
     type: "question",
     title: "Navigation request",
     message: `Do you want to open this website?`,
-    detail: url,
+    detail: toMultiline(url),
     buttons: ["Cancel", ...buttons],
     defaultId: DIALOG_NAVIGATION_ANSWERS.CANCEL,
     cancelId: DIALOG_NAVIGATION_ANSWERS.CANCEL,
