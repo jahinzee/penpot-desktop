@@ -1,6 +1,7 @@
-const { app, ipcMain, shell } = require("electron");
+const { app, ipcMain, shell, dialog } = require("electron");
 const { URL } = require("url");
 const { join } = require("path");
+const { toMultiline } = require("./string");
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
 const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
@@ -76,6 +77,12 @@ app.on("web-contents-created", (event, contents) => {
       console.error(
         `[ERROR] [app.web-contents-created.setWindowOpenHandler] Forbidden navigation.`
       );
+
+      showNavigationQuestion(parsedUrl.href, {
+        buttons: ["Open in a browser"],
+        onAllow: () => shell.openExternal(parsedUrl.href),
+        logLabel: "app.web-contents-created.setWindowOpenHandler",
+      });
     }
 
     return { action: "deny" };
@@ -95,7 +102,11 @@ app.on("web-contents-created", (event, contents) => {
         `[ERROR] [app.web-contents-created.will-navigate] Forbidden origin: ${parsedUrl.origin}`
       );
 
-      event.preventDefault();
+      showNavigationQuestion(parsedUrl.href, {
+        buttons: ["Open"],
+        onCancel: () => event.preventDefault(),
+        logLabel: "app.web-contents-created.will-navigate",
+      });
     }
   });
 
@@ -167,3 +178,38 @@ app.on("web-contents-created", (event, contents) => {
     }
   });
 });
+
+/**
+ * Presents a question dialog about the given url and executes selected action.
+ *
+ * @typedef {() => void} Callback
+ *
+ * @param {string} url
+ * @param {{ buttons: [string], onCancel?: Callback, onAllow?: Callback, logLabel?: string}} options
+ */
+function showNavigationQuestion(url, { buttons, onCancel, onAllow, logLabel }) {
+  const DIALOG_NAVIGATION_ANSWERS = Object.freeze({
+    CANCEL: 0,
+    ALLOW: 1,
+  });
+  const decision = dialog.showMessageBoxSync(mainWindow, {
+    type: "question",
+    title: "Navigation request",
+    message: `Do you want to open this website?`,
+    detail: toMultiline(url),
+    buttons: ["Cancel", ...buttons],
+    defaultId: DIALOG_NAVIGATION_ANSWERS.CANCEL,
+    cancelId: DIALOG_NAVIGATION_ANSWERS.CANCEL,
+  });
+
+  switch (decision) {
+    case DIALOG_NAVIGATION_ANSWERS.ALLOW:
+      console.log(`[INFO] [${logLabel}.navigation-question] Allow`);
+      onAllow?.();
+      break;
+    case DIALOG_NAVIGATION_ANSWERS.CANCEL:
+    default:
+      console.log(`[INFO] [${logLabel}.navigation-question] Cancel`);
+      onCancel?.();
+  }
+}
