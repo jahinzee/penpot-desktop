@@ -24,10 +24,24 @@
     <provides>
         <mediatype>application/x-penpot</mediatype>
     </provides>
+    <branding>
+        <color type="primary" scheme_preference="light">#dde3e9</color>
+        <color type="primary" scheme_preference="dark">#34393c</color>
+    </branding>
     <content_rating type="oars-1.1"/>
     <url type="homepage">https://www.penpot.app</url>
     <url type="help">https://help.penpot.app/</url>
     <url type="bugtracker">https://github.com/author-more/penpot-desktop.git</url>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://github.com/author-more/penpot-desktop/blob/flatpak/screenshots/penpot-1.png?raw=true</image>
+            <caption>Example project showcasing the interface</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://github.com/author-more/penpot-desktop/blob/flatpak/screenshots/penpot-2.png?raw=true</image>
+            <caption>Dashboard showing example projects and drafts</caption>
+        </screenshot>
+    </screenshots>
     <recommends>
         <display_length compare="ge">768</display_length>
         <internet>always</internet>
