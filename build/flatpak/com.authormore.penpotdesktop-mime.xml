@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
 <mime-type type="application/x-penpot">
-  <icon name="com.authormore.Penpot-Desktop.application-x-penpot" />
+  <icon name="com.authormore.penpotdesktop.application-x-penpot" />
   <generic-icon name="x-office-document"/>
   <glob pattern="*.penpot"/>
   <comment>Penpot document</comment>

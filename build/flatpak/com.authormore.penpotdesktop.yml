@@ -1,4 +1,4 @@
-app-id: com.authormore.Penpot-Desktop
+app-id: com.authormore.penpotdesktop
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
@@ -14,21 +14,8 @@ finish-args:
   - --socket=fallback-x11
   # required to fix cursor scaling on wayland
   - --env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons
-  - --socket=pulseaudio
   - --share=network
   - --device=dri
-
-  # D-Bus Access
-  - --talk-name=com.canonical.AppMenu.Registrar
-  - --talk-name=org.freedesktop.Notifications
-  - --talk-name=org.freedesktop.ScreenSaver
-  - --talk-name=org.freedesktop.secrets
-  - --talk-name=org.kde.StatusNotifierWatcher
-  - --talk-name=org.kde.kwalletd5
-  - --talk-name=org.kde.kwalletd6
-  # System D-Bus Access
-  - --system-talk-name=org.freedesktop.UPower
-  - --system-talk-name=org.freedesktop.login1
 
   # Static access until electron gets fixed
   - --filesystem=xdg-download
@@ -64,8 +51,6 @@ modules:
       - install -Dm644 build/flatpak/${FLATPAK_ID}.desktop /app/share/applications/${FLATPAK_ID}.desktop
       - install -Dm644 build/flatpak/${FLATPAK_ID}.metainfo.xml /app/share/metainfo/${FLATPAK_ID}.metainfo.xml
       - install -Dm644 build/flatpak/$FLATPAK_ID-mime.xml -t /app/share/mime/packages/
-    cleanup:
-      - ../flatpak-node
     sources:
       - type: git
         url: https://github.com/author-more/penpot-desktop.git
