@@ -7,7 +7,9 @@ It delivers a desktop-like experience for Penpot users with the addition of inte
 
 ## Quick Links
 - [Penpot](https://penpot.app/) - The official website for Penpot.
-- [Old documentation](https://sudovanilla.org/docs/penpot-desktop/introduction/) - The old documentation for Penpot Desktop. New, updated documentation is in the works.
+- [Documentation](https://github.com/author-more/penpot-desktop/wiki) - The Penpot Desktop knowledge base
+  - [Installation instruction](https://github.com/author-more/penpot-desktop/wiki/Installation)
+  - [Offline-use guide](https://github.com/author-more/penpot-desktop/wiki/Self%E2%80%90hosting)
 
 ## Development and Building
 
