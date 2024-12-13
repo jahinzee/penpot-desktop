@@ -30,6 +30,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.api.onOpenTab(openTab);
+window.api.onTabMenuAction(handleTabMenuAction);
 
 async function resetTabs() {
   const tabGroup = await getTabGroup();
@@ -83,6 +84,11 @@ async function prepareTabReloadButton() {
  */
 function tabReadyHandler(tab) {
   const webview = /** @type {WebviewTag} */ (tab.webview);
+
+  tab.element.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    window.api.send("openTabMenu", tab.id);
+  });
   webview.addEventListener("page-title-updated", () => {
     const newTitle = webview.getTitle();
     tab.setTitle(newTitle);
@@ -93,4 +99,75 @@ async function getTabGroup() {
   return /** @type {TabGroup | null} */ (
     await getIncludedElement("tab-group", "#include-tabs")
   );
+}
+
+/**
+ * Handles action from a tab menu interaction.
+ *
+ * @param {{command: string, tabId: number}} action
+ */
+async function handleTabMenuAction({ command, tabId }) {
+  const tabGroup = await getTabGroup();
+  const tab = tabGroup?.getTab(tabId);
+
+  if (command === "reload-tab") {
+    /** @type {WebviewTag} */ (tab?.webview).reload();
+  }
+
+  if (command === "duplicate-tab") {
+    const url = /** @type {WebviewTag} */ (tab?.webview).getURL();
+    openTab(url);
+  }
+
+  if (command.startsWith("close-tabs-")) {
+    const pivotPosition = tab?.getPosition();
+
+    /** @type {-1 | 0| 1} */
+    let direction;
+    switch (command) {
+      case "close-tabs-right":
+        direction = 1;
+        break;
+      case "close-tabs-left":
+        direction = -1;
+        break;
+      case "close-tabs-other":
+      default:
+        direction = 0;
+    }
+
+    if (tabGroup && pivotPosition) {
+      closeTabs(tabGroup, pivotPosition, direction);
+    }
+  }
+}
+
+/**
+ * Close tabs from the given tab's position.
+ *
+ * @param {TabGroup} tabs
+ * @param {number} from - Position of the pivot tab.
+ * @param {-1 | 0 | 1} direction - Direction of the closing. 1 for higher position, 0 any other position, -1 for lower position.
+ */
+function closeTabs(tabs, from, direction) {
+  tabs.eachTab((tab) => {
+    const position = tab.getPosition();
+
+    const isMatchingPosition = position === from;
+    const isLowerPosition = position < from;
+    const isHigherPosition = position > from;
+    const isOtherDirection = direction === 0;
+    const isLowerDirection = direction === -1;
+    const isHigherDirection = direction === 1;
+
+    const isOtherClose = isOtherDirection && !isMatchingPosition;
+    const isHigherClose = isLowerDirection && isLowerPosition;
+    const isLowerClose = isHigherDirection && isHigherPosition;
+
+    const isClose = isOtherClose || isHigherClose || isLowerClose;
+
+    if (isClose) {
+      tab.close(true);
+    }
+  });
 }
