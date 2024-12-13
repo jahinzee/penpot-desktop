@@ -2,7 +2,7 @@ const {app, BrowserWindow, ipcMain, ipcRenderer, shell} = require('electron')
 const windowStateKeeper = require('electron-window-state')
 const path = require('path')
 
-const Menu = require('./menu')
+const menu = require('./menu')
 const Platform = require('./platform')
 
 module.exports = {
@@ -50,7 +50,7 @@ module.exports = {
     ipcMain.on('OpenHelp', () => {shell.openExternal('https://github.com/author-more/penpot-desktop/wiki')})
     ipcMain.on('OpenOffline', () => {shell.openExternal('https://github.com/author-more/penpot-desktop/wiki/Self%E2%80%90hosting')})
     ipcMain.on('openTabMenu', (_event, tabId) => {
-      const tabMenu = Menu.getTabMenu(tabId)
+      const tabMenu = menu.getTabMenu(tabId)
       tabMenu.popup({
         window: mainWindow
       })
@@ -67,7 +67,7 @@ module.exports = {
     
     // Other Functions
     mainWindowState.manage(mainWindow)
-    Menu.MainMenu()
+    menu.setAppMenu()
     Platform.CSS()
   }
 }
