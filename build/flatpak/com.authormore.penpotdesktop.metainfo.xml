@@ -53,6 +53,32 @@
         <internet>offline-only</internet>
     </supports>
     <releases>
+        <release version="v0.7.0" date="2024-12-15">
+            <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.7.0</url>
+            <description>
+                <p>Features</p>
+                <ul>
+                    <li>Added a tab management menu.
+                        <ul>
+                            <li>Added a context menu for a tab item. It gives you an option to reload or duplicate a tab, or batch close [other, right, left] tabs in relation to the targeted one.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p>Improvements</p>
+                <ul>
+                    <li>Added Flathub (Flatpak) support. By @Beryesa.</li>
+                </ul>
+                <p>Internal</p>
+                <ul>
+                    <li>Cleaned up dependencies.
+                        <ul>
+                            <li>Refactored styling to CSS, removed Sass.</li> 
+                            <li>Removed unused dependencies.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </description> 
+        </release>
         <release version="v0.6.0" date="2024-12-04">
             <description>
                 <p>Features:</p>
