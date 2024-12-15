@@ -11,12 +11,15 @@
   border: 0;
 }
 
-.theme-is-light {
-  --theme-filter: invert(1);
+@media (prefers-color-scheme: light) {
+  body {
+    --theme-filter: invert(1);
 
-  background: #ffffff;
+    background: #ffffff;
+  }
 
-  .titlebar, .controls {
+  .titlebar,
+  .controls {
     filter: var(--theme-filter, none);
   }
 
@@ -26,8 +29,10 @@
   }
 }
 
-.theme-is-dark {
-  background: #18181a;
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #18181a;
+  }
 
   #theme-select-dark {
     border-color: #00ff89;
@@ -191,12 +196,12 @@ div#theme {
   }
 }
 
-div#theme-select-light {
+#theme-select-light {
   color: black;
   background: white;
 }
 
-div#theme-select-dark {
+#theme-select-dark {
   color: white;
   background: #232222;
 }

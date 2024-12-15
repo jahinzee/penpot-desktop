@@ -1,5 +1,6 @@
 declare var api: {
   send: (channel: string, data: unknown) => void;
+  setTheme: (themeId: "light" | "dark" | "system") => void;
   onOpenTab: (callback: (href: string) => void) => void;
   onTabMenuAction: (
     callback: ({ command: string, tabId: number }) => void
