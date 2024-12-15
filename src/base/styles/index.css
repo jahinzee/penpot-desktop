@@ -12,10 +12,12 @@
 }
 
 .theme-is-light {
+  --theme-filter: invert(1);
+
   background: #ffffff;
 
-  .titlebar {
-    filter: invert(1);
+  .titlebar, .controls {
+    filter: var(--theme-filter, none);
   }
 
   #theme-select-light {
