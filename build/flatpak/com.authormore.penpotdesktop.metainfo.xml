@@ -58,11 +58,9 @@
             <description>
                 <p>Features</p>
                 <ul>
-                    <li>Added a tab management menu.
-                        <ul>
-                            <li>Added a context menu for a tab item. It gives you an option to reload or duplicate a tab, or batch close [other, right, left] tabs in relation to the targeted one.</li>
-                        </ul>
-                    </li>
+                    <li>Added a tab management menu.</li>
+                    <li>Added a context menu for a tab item. It gives you an option to reload or duplicate a tab, or batch 
+                    close [other, right, left] tabs in relation to the targeted one.</li>
                 </ul>
                 <p>Improvements</p>
                 <ul>
@@ -70,14 +68,11 @@
                 </ul>
                 <p>Internal</p>
                 <ul>
-                    <li>Cleaned up dependencies.
-                        <ul>
-                            <li>Refactored styling to CSS, removed Sass.</li> 
-                            <li>Removed unused dependencies.</li>
-                        </ul>
-                    </li>
+                    <li>Cleaned up dependencies.</li>
+                    <li>Refactored styling to CSS, removed Sass.</li>
+                    <li>Removed unused dependencies.</li>
                 </ul>
-            </description> 
+            </description>
         </release>
         <release version="v0.6.0" date="2024-12-04">
             <description>
