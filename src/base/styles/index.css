@@ -12,14 +12,17 @@
 }
 
 @media (prefers-color-scheme: light) {
-  body {
+  :root { 
     --theme-filter: invert(1);
+  }
 
+  body, #settings {
     background: #ffffff;
   }
 
   .titlebar,
-  .controls {
+  .controls,
+  #settings > * {
     filter: var(--theme-filter, none);
   }
 
@@ -141,7 +144,6 @@ drag {
   margin: 6px;
   min-width: 250px;
   width: 300px;
-  transition: 1s all;
 
   div:nth-child(1) > div.settings-section-header {
     border-radius: 4px 4px 0px 0px;
