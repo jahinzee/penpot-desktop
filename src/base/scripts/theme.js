@@ -13,14 +13,27 @@ window.addEventListener("DOMContentLoaded", () => {
     setTheme(themeId);
   }
 
-  prepareForm();
+  prepareForm(themeId);
 });
 
-async function prepareForm() {
-  const { themeSelectLight, themeSelectDark } = await getThemeSettingsForm();
+/**
+ * @param {ThemeId | null} themeId
+ */
+async function prepareForm(themeId) {
+  const { themeSelect } = await getThemeSettingsForm();
 
-  themeSelectLight?.addEventListener("click", () => setTheme("light"));
-  themeSelectDark?.addEventListener("click", () => setTheme("dark"));
+  if (themeSelect && themeId) {
+    themeSelect.value = themeId;
+  }
+
+  themeSelect?.addEventListener("change", (event) => {
+    const { target } = event;
+    const value = target instanceof HTMLSelectElement && target.value;
+
+    if (isThemeId(value)) {
+      setTheme(value);
+    }
+  });
 }
 
 /**
@@ -32,16 +45,22 @@ function setTheme(themeId) {
 }
 
 async function getThemeSettingsForm() {
-  const themeSelectLight = await getIncludedElement(
-    "#theme-select-light",
+  const themeSelect = await getIncludedElement(
+    "#theme-select",
     "#include-settings",
-    HTMLButtonElement
-  );
-  const themeSelectDark = await getIncludedElement(
-    "#theme-select-dark",
-    "#include-settings",
-    HTMLButtonElement
+    HTMLSelectElement
   );
 
-  return { themeSelectLight, themeSelectDark };
+  return { themeSelect };
+}
+
+/**
+ *
+ * @param {unknown} value
+ * @returns {value is ThemeId}
+ */
+function isThemeId(value) {
+  return (
+    typeof value === "string" && ["light", "dark", "system"].includes(value)
+  );
 }
