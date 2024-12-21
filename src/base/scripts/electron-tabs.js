@@ -85,14 +85,45 @@ async function prepareTabReloadButton() {
 function tabReadyHandler(tab) {
   const webview = /** @type {WebviewTag} */ (tab.webview);
 
+  tab.once("webview-dom-ready", () => {
+    tab.on("active", () => requestTabTheme(tab));
+  });
   tab.element.addEventListener("contextmenu", (event) => {
     event.preventDefault();
     window.api.send("openTabMenu", tab.id);
+  });
+  webview.addEventListener("ipc-message", (event) => {
+    const isThemeUpdate = event.channel === THEME_TAB_EVENTS.UPDATE;
+    if (isThemeUpdate) {
+      const [theme] = event.args;
+
+      handleInTabThemeUpdate(theme);
+    }
   });
   webview.addEventListener("page-title-updated", () => {
     const newTitle = webview.getTitle();
     tab.setTitle(newTitle);
   });
+}
+
+/**
+ * Calls a tab and requests a theme update send-out. 
+ * If no tab is provided, calls the active tab.
+ *  
+ * @param {Tab =} tab
+ */
+async function requestTabTheme(tab) {
+  tab = tab || (await getActiveTab());
+
+  if (tab) {
+    const webview = /** @type {WebviewTag} */ (tab.webview);
+    webview?.send(THEME_TAB_EVENTS.REQUEST_UPDATE);
+  }
+}
+
+async function getActiveTab() {
+  const tabGroup = await getTabGroup();
+  return tabGroup?.getActiveTab();
 }
 
 async function getTabGroup() {
