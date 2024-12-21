@@ -40,9 +40,16 @@ async function prepareForm(themeSetting) {
     const value = target instanceof HTMLSelectElement && target.value;
 
     if (isThemeSetting(value)) {
-      currentThemeSetting = value;
+      const isTabTheme = value === "tab";
 
+      currentThemeSetting = value;
       localStorage.setItem(THEME_STORE_KEY, value);
+
+      if (isTabTheme) {
+        requestTabTheme();
+        return;
+      }
+
       setTheme(value);
     } else {
       currentThemeSetting = null;

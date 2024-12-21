@@ -86,9 +86,7 @@ function tabReadyHandler(tab) {
   const webview = /** @type {WebviewTag} */ (tab.webview);
 
   tab.once("webview-dom-ready", () => {
-    tab.on("active", () => {
-      webview.send(THEME_TAB_EVENTS.REQUEST_UPDATE);
-    });
+    tab.on("active", () => requestTabTheme(tab));
   });
   tab.element.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -106,6 +104,26 @@ function tabReadyHandler(tab) {
     const newTitle = webview.getTitle();
     tab.setTitle(newTitle);
   });
+}
+
+/**
+ * Calls a tab and requests a theme update send-out. 
+ * If no tab is provided, calls the active tab.
+ *  
+ * @param {Tab =} tab
+ */
+async function requestTabTheme(tab) {
+  tab = tab || (await getActiveTab());
+
+  if (tab) {
+    const webview = /** @type {WebviewTag} */ (tab.webview);
+    webview?.send(THEME_TAB_EVENTS.REQUEST_UPDATE);
+  }
+}
+
+async function getActiveTab() {
+  const tabGroup = await getTabGroup();
+  return tabGroup?.getActiveTab();
 }
 
 async function getTabGroup() {
