@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld(
   "api",
-  /** @type typeof api */ ({
+  /** @type {import("../types/ipc.js").Api} */ ({
     send: (channel, data) => {
       let validChannels = [
         "updateApp",

@@ -4,7 +4,7 @@
  * @param {string} string
  * @param {{ charactersPerLine?: number }} options
  */
-function toMultiline(
+export function toMultiline(
   string,
   { charactersPerLine } = { charactersPerLine: 75 }
 ) {
@@ -12,7 +12,3 @@ function toMultiline(
 
   return string.match(pattern)?.join("\n");
 }
-
-module.exports = {
-  toMultiline,
-};

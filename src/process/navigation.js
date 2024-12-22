@@ -1,7 +1,8 @@
-const { app, ipcMain, shell, dialog } = require("electron");
-const { URL } = require("url");
-const { join } = require("path");
-const { toMultiline } = require("./string");
+import { app, ipcMain, shell, dialog } from "electron";
+import { URL } from "url";
+import { join } from "path";
+import { toMultiline } from "./string.js";
+import { getMainWindow } from "./window.js";
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
 const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
@@ -47,6 +48,8 @@ ipcMain.on("removeInstance", (event, instance) => {
 });
 
 app.on("web-contents-created", (event, contents) => {
+  const mainWindow = getMainWindow();
+
   // Open links in a new tab or a browser, instead of a new window
   contents.setWindowOpenHandler(({ url }) => {
     const parsedUrl = new URL(url);
@@ -149,7 +152,7 @@ app.on("web-contents-created", (event, contents) => {
 
     const allowedPreloadScriptPath = join(
       app.getAppPath(),
-      "src/base/scripts/webviews/preload.js"
+      "src/base/scripts/webviews/preload.mjs"
     );
     const isAllowedPreloadScript =
       !webPreferences.preload ||
@@ -188,6 +191,8 @@ app.on("web-contents-created", (event, contents) => {
  * @param {{ buttons: [string], onCancel?: Callback, onAllow?: Callback, logLabel?: string}} options
  */
 function showNavigationQuestion(url, { buttons, onCancel, onAllow, logLabel }) {
+  const mainWindow = getMainWindow();
+
   const DIALOG_NAVIGATION_ANSWERS = Object.freeze({
     CANCEL: 0,
     ALLOW: 1,

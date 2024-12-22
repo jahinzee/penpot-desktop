@@ -1,11 +1,13 @@
-const { app, Menu } = require("electron");
-const Platform = require("./platform");
+import { app, Menu } from "electron";
+import { applyDirectStyling } from "./platform.js";
+import { getMainWindow } from "./window.js";
 
 /**
  * @typedef {import("electron").MenuItemConstructorOptions} MenuItemConstructorOptions
  */
 
-function setAppMenu() {
+export function setAppMenu() {
+  const mainWindow = getMainWindow();
   //TypeScript has problems evaluating types with ternary operators in the menu template, hence the push method solution.
   const isMacOs = process.platform === "darwin";
 
@@ -116,7 +118,7 @@ function setAppMenu() {
         click: async () => {
           mainWindow.reload();
           setTimeout(() => {
-            Platform.CSS();
+            applyDirectStyling();
           }, 1000);
         },
       },
@@ -225,7 +227,9 @@ function setAppMenu() {
 /**
  * @param {number} tabId
  */
-function getTabMenu(tabId) {
+export function getTabMenu(tabId) {
+  const mainWindow = getMainWindow();
+
   /** @type {(command: string) => void} */
   const dispatchAction = (command) =>
     mainWindow.webContents.send("tab-menu-action", {
@@ -257,8 +261,3 @@ function getTabMenu(tabId) {
     },
   ]);
 }
-
-module.exports = {
-  setAppMenu,
-  getTabMenu,
-};

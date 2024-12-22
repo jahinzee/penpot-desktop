@@ -25,7 +25,7 @@
  * @param {string} includeSelector - The CSS selector of the sl-include element.
  * @param {Class<E> =} type - The expected type of the element.
  */
-function getIncludedElement(selector, includeSelector, type) {
+export function getIncludedElement(selector, includeSelector, type) {
   return new Promise((resolve) => {
     const includeElement = document.querySelector(includeSelector);
     if (!includeElement) {
@@ -59,7 +59,7 @@ function getIncludedElement(selector, includeSelector, type) {
  * @param {ParentNode | null | undefined} parent
  * @return {E | null}
  */
-function typedQuerySelector(selector, type, parent = document) {
+export function typedQuerySelector(selector, type, parent = document) {
   const element = parent?.querySelector(selector);
   if (element instanceof type) {
     return element;

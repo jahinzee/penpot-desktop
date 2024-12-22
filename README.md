@@ -26,4 +26,7 @@ It delivers a desktop-like experience for Penpot users with the addition of inte
 1. Run `npm ci` to install packages.  
    *Other package managers such as Yarn, PNPM, or Bun should work as well.*
 1. (Optional) Run `npm run dev` to start the application in development mode. This will open a new window with the application running.
+    
+    > Note: Penpot Desktop is using ES Modules. Make sure to read the [ES Modules (ESM) in Electron guide](https://www.electronjs.org/docs/latest/tutorial/esm).
+
 1. Run `npm run build` to build the application. By default, it will build for the current OS and architecture, but you can pass flags to build for other platforms. See the [Electron Builder documentation](https://www.electron.build/cli) for more information.
