@@ -1,39 +1,41 @@
 {
-  "name": "penpot-desktop",
-  "version": "0.7.0",
-  "author": "Author More",
-  "license": "AGPL-3.0-or-later",
-  "trustedDependencies": [
-    "electron"
-  ],
-  "main": "src/process/index.js",
-  "homepage": "https://github.com/author-more/penpot-desktop",
-  "keywords": [
-    "design",
-    "prototyping",
-    "mockups",
-    "graphics"
-  ],
-  "bugs": {
-    "url": "https://github.com/author-more/penpot-desktop/issues",
-    "email": "penpotdesktop@authormore.com"
-  },
-  "type":"module",
-  "scripts": {
-    "start": "npm run dev",
-    "build": "electron-builder --config build/electron-builder.yml",
-    "build:arm": "electron-builder --config build/electron-builder.yml --arm64",
-    "dev": "electron ."
-  },
-  "dependencies": {
-    "@shoelace-style/shoelace": "^2.18.0",
-    "electron-tabs": "^1.0.1",
-    "electron-updater": "^6.3.9",
-    "electron-window-state": "^5.0.3"
-  },
-  "devDependencies": {
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8",
-    "typescript": "^5.7.2"
-  }
+	"name": "penpot-desktop",
+	"version": "0.7.0",
+	"author": "Author More",
+	"license": "AGPL-3.0-or-later",
+	"trustedDependencies": [
+		"electron"
+	],
+	"main": "src/process/index.js",
+	"homepage": "https://github.com/author-more/penpot-desktop",
+	"keywords": [
+		"design",
+		"prototyping",
+		"mockups",
+		"graphics"
+	],
+	"bugs": {
+		"url": "https://github.com/author-more/penpot-desktop/issues",
+		"email": "penpotdesktop@authormore.com"
+	},
+	"type": "module",
+	"scripts": {
+		"start": "npm run dev",
+		"build": "electron-builder --config build/electron-builder.yml",
+		"build:arm": "electron-builder --config build/electron-builder.yml --arm64",
+		"dev": "electron .",
+		"format": "prettier . --write"
+	},
+	"dependencies": {
+		"@shoelace-style/shoelace": "^2.18.0",
+		"electron-tabs": "^1.0.1",
+		"electron-updater": "^6.3.9",
+		"electron-window-state": "^5.0.3"
+	},
+	"devDependencies": {
+		"electron": "^33.2.0",
+		"electron-builder": "^25.1.8",
+		"prettier": "3.4.2",
+		"typescript": "^5.7.2"
+	}
 }
