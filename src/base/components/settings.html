@@ -1,35 +1,49 @@
 <div id="settings" class="dropdown-modal">
-    <div class="settings-section">
-        <div class="settings-section-header">
-            <h2>Instance</h2>
-        </div>
-        <div class="settings-section-content">
-            <input style="width: -webkit-fill-available;" id="instance-field" type="url" pattern="https?://.*" placeholder="https://design.penpot.app/" value=""/>
-            <input id="instance-save" type="button" value="Save" />
-        </div>
-    </div>
-    <div class="settings-section">
-        <div class="settings-section-header">
-            <h2>Theme</h2>
-        </div>
-        <div id="theme" class="settings-section-content">
-            <select name="theme" id="theme-select">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="system">System</option>
-                <option value="tab">Penpot</option>
-            </select>
-        </div>
-    </div>
-    <div class="settings-section">
-        <div class="settings-section-header">
-            <h2>Help</h2>
-        </div>
-        <div class="settings-section-content">
-            <div style="display: flex; gap: 12px; justify-content: space-evenly; flex: auto;">
-                <a href="#" onclick="window.api.send('OpenHelp')">Help</a>
-                <a href="#" onclick="window.api.send('OpenOffline')">Selfhost</a>
-            </div>
-        </div>
-    </div>
+	<div class="settings-section">
+		<div class="settings-section-header">
+			<h2>Instance</h2>
+		</div>
+		<div class="settings-section-content">
+			<input
+				style="width: -webkit-fill-available"
+				id="instance-field"
+				type="url"
+				pattern="https?://.*"
+				placeholder="https://design.penpot.app/"
+				value=""
+			/>
+			<input id="instance-save" type="button" value="Save" />
+		</div>
+	</div>
+	<div class="settings-section">
+		<div class="settings-section-header">
+			<h2>Theme</h2>
+		</div>
+		<div id="theme" class="settings-section-content">
+			<select name="theme" id="theme-select">
+				<option value="light">Light</option>
+				<option value="dark">Dark</option>
+				<option value="system">System</option>
+				<option value="tab">Penpot</option>
+			</select>
+		</div>
+	</div>
+	<div class="settings-section">
+		<div class="settings-section-header">
+			<h2>Help</h2>
+		</div>
+		<div class="settings-section-content">
+			<div
+				style="
+					display: flex;
+					gap: 12px;
+					justify-content: space-evenly;
+					flex: auto;
+				"
+			>
+				<a href="#" onclick="window.api.send('OpenHelp')">Help</a>
+				<a href="#" onclick="window.api.send('OpenOffline')">Selfhost</a>
+			</div>
+		</div>
+	</div>
 </div>

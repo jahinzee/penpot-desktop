@@ -26,28 +26,28 @@
  * @param {Class<E> =} type - The expected type of the element.
  */
 export function getIncludedElement(selector, includeSelector, type) {
-  return new Promise((resolve) => {
-    const includeElement = document.querySelector(includeSelector);
-    if (!includeElement) {
-      return resolve(null);
-    }
+	return new Promise((resolve) => {
+		const includeElement = document.querySelector(includeSelector);
+		if (!includeElement) {
+			return resolve(null);
+		}
 
-    const getElement = () =>
-      type
-        ? typedQuerySelector(selector, type, includeElement)
-        : includeElement.querySelector(selector);
-    const element = getElement();
+		const getElement = () =>
+			type
+				? typedQuerySelector(selector, type, includeElement)
+				: includeElement.querySelector(selector);
+		const element = getElement();
 
-    if (element) {
-      return resolve(element);
-    }
+		if (element) {
+			return resolve(element);
+		}
 
-    includeElement.addEventListener("sl-load", () => {
-      const element = getElement();
+		includeElement.addEventListener("sl-load", () => {
+			const element = getElement();
 
-      resolve(element);
-    });
-  });
+			resolve(element);
+		});
+	});
 }
 
 /**
@@ -60,10 +60,10 @@ export function getIncludedElement(selector, includeSelector, type) {
  * @return {E | null}
  */
 export function typedQuerySelector(selector, type, parent = document) {
-  const element = parent?.querySelector(selector);
-  if (element instanceof type) {
-    return element;
-  }
+	const element = parent?.querySelector(selector);
+	if (element instanceof type) {
+		return element;
+	}
 
-  return null;
+	return null;
 }

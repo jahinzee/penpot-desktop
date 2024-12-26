@@ -7,8 +7,8 @@ import { initTheme } from "./theme.js";
 import { initToggles } from "./toggles.js";
 
 window.addEventListener("DOMContentLoaded", () => {
-  initTabs();
-  initInstance();
-  initTheme();
-  initToggles();
+	initTabs();
+	initInstance();
+	initTheme();
+	initToggles();
 });
