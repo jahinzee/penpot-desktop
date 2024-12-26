@@ -18,6 +18,7 @@
     "url": "https://github.com/author-more/penpot-desktop/issues",
     "email": "penpotdesktop@authormore.com"
   },
+  "type":"module",
   "scripts": {
     "start": "npm run dev",
     "build": "electron-builder --config build/electron-builder.yml",

@@ -1,3 +1,6 @@
+import { getIncludedElement, typedQuerySelector } from "./dom.js";
+import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
+
 /**
  * @typedef {import("electron-tabs").TabGroup} TabGroup
  * @typedef {import("electron-tabs").Tab} Tab
@@ -5,7 +8,7 @@
  */
 
 const DEFAULT_INSTANCE = "https://design.penpot.app/";
-const PRELOAD_PATH = "./scripts/webviews/preload.js";
+const PRELOAD_PATH = "./scripts/webviews/preload.mjs";
 const DEFAULT_TAB_OPTIONS = Object.freeze({
   src: DEFAULT_INSTANCE,
   active: true,
@@ -16,23 +19,23 @@ const DEFAULT_TAB_OPTIONS = Object.freeze({
   ready: tabReadyHandler,
 });
 
-window.addEventListener("DOMContentLoaded", async () => {
+export async function initTabs() {
   const tabGroup = await getTabGroup();
 
   tabGroup?.on("tab-removed", () => {
-    ATWC();
+    handleNoTabs();
   });
   tabGroup?.on("tab-added", () => {
-    ATWC();
+    handleNoTabs();
   });
 
   prepareTabReloadButton();
-});
 
-window.api.onOpenTab(openTab);
-window.api.onTabMenuAction(handleTabMenuAction);
+  window.api.onOpenTab(openTab);
+  window.api.onTabMenuAction(handleTabMenuAction);
+}
 
-async function resetTabs() {
+export async function resetTabs() {
   const tabGroup = await getTabGroup();
   tabGroup?.eachTab((tab) => tab.close(false));
   openTab();
@@ -41,7 +44,7 @@ async function resetTabs() {
 /**
  * @param {string =} href
  */
-async function setDefaultTab(href) {
+export async function setDefaultTab(href) {
   const tabGroup = await getTabGroup();
 
   tabGroup?.setDefaultTab({
@@ -53,7 +56,7 @@ async function setDefaultTab(href) {
 /**
  * @param {string =} href
  */
-async function openTab(href) {
+export async function openTab(href) {
   const tabGroup = await getTabGroup();
 
   tabGroup?.addTab(
@@ -107,12 +110,12 @@ function tabReadyHandler(tab) {
 }
 
 /**
- * Calls a tab and requests a theme update send-out. 
+ * Calls a tab and requests a theme update send-out.
  * If no tab is provided, calls the active tab.
- *  
+ *
  * @param {Tab =} tab
  */
-async function requestTabTheme(tab) {
+export async function requestTabTheme(tab) {
   tab = tab || (await getActiveTab());
 
   if (tab) {
@@ -126,7 +129,18 @@ async function getActiveTab() {
   return tabGroup?.getActiveTab();
 }
 
-async function getTabGroup() {
+async function handleNoTabs() {
+  const tabGroup = await getTabGroup();
+  const tabs = tabGroup?.getTabs();
+  const hasTabs = !!tabs?.length;
+
+  const noTabsExistPage = typedQuerySelector(".no-tabs-exist", HTMLElement);
+  if (noTabsExistPage) {
+    noTabsExistPage.style.display = hasTabs ? "none" : "inherit";
+  }
+}
+
+export async function getTabGroup() {
   return /** @type {TabGroup | null} */ (
     await getIncludedElement("tab-group", "#include-tabs")
   );

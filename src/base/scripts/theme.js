@@ -4,8 +4,11 @@
  * @typedef {import("electron").IpcMessageEvent} IpcMessageEvent
  */
 
+import { getIncludedElement } from "./dom.js";
+import { requestTabTheme } from "./electron-tabs.js";
+
 const THEME_STORE_KEY = "theme";
-const THEME_TAB_EVENTS = Object.freeze({
+export const THEME_TAB_EVENTS = Object.freeze({
   REQUEST_UPDATE: "theme-request-update",
   UPDATE: "theme-update",
 });
@@ -13,7 +16,7 @@ const THEME_TAB_EVENTS = Object.freeze({
 /** @type {ThemeSetting | null} */
 let currentThemeSetting = null;
 
-window.addEventListener("DOMContentLoaded", () => {
+export function initTheme() {
   currentThemeSetting = /** @type {ThemeSetting | null} */ (
     localStorage.getItem(THEME_STORE_KEY)
   );
@@ -23,7 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   prepareForm(currentThemeSetting);
-});
+}
 
 /**
  * @param {ThemeSetting | null} themeSetting
@@ -80,7 +83,7 @@ async function getThemeSettingsForm() {
 /**
  * @param {string} inTabTheme
  */
-function handleInTabThemeUpdate(inTabTheme) {
+export function handleInTabThemeUpdate(inTabTheme) {
   const shouldUseInTabTheme = currentThemeSetting === "tab";
 
   if (shouldUseInTabTheme) {

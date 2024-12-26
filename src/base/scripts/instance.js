@@ -1,16 +1,19 @@
+import { getIncludedElement } from "./dom.js";
+import { openTab, resetTabs, setDefaultTab } from "./electron-tabs.js";
+
 const INSTANCE_STORE_KEY = "Instance";
 const INSTANCE_EVENTS = Object.freeze({
   REGISTER: "registerInstance",
   REMOVE: "removeInstance",
 });
 
-window.addEventListener("DOMContentLoaded", async () => {
+export async function initInstance() {
   const savedInstance = await registerSavedInstance();
 
   await setDefaultTab(savedInstance);
   openTab(savedInstance);
   prepareSaveButton();
-});
+}
 
 async function prepareSaveButton() {
   const { instanceSaveButton } = await getInstanceSettingsForm();
@@ -36,11 +39,11 @@ async function saveInstance(trigger) {
     await setDefaultTab(instance);
   } else {
     const savedInstance = localStorage.getItem(INSTANCE_STORE_KEY);
-    
+
     if (savedInstance) {
       window.api.send(INSTANCE_EVENTS.REMOVE, savedInstance);
     }
-    
+
     localStorage.removeItem(INSTANCE_STORE_KEY);
     await setDefaultTab();
   }

@@ -1,13 +1,12 @@
-const {app} = require('electron')
-const {autoUpdater} = require("electron-updater")
+import { app } from "electron";
+import electronUpdater from "electron-updater";
+import { MainWindow } from "./window.js";
 
-// Import Files
-require('./navigation')
-let MainWindow = require('./window')
+await import("./navigation.js");
 
-app.enableSandbox()
-// Launch
+app.enableSandbox();
+
 app.whenReady().then(() => {
-    autoUpdater.checkForUpdatesAndNotify()
-    MainWindow.create()
-})
+  electronUpdater.autoUpdater.checkForUpdatesAndNotify();
+  MainWindow.create();
+});

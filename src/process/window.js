@@ -1,11 +1,18 @@
-const {app, BrowserWindow, ipcMain, ipcRenderer, shell, nativeTheme} = require('electron')
-const windowStateKeeper = require('electron-window-state')
-const path = require('path')
+import {app, BrowserWindow, ipcMain, shell, nativeTheme} from "electron"
+import windowStateKeeper from 'electron-window-state'
+import path from 'path'
 
-const menu = require('./menu')
-const Platform = require('./platform')
+import { setAppMenu, getTabMenu } from './menu.js'
+import { applyDirectStyling } from './platform.js'
 
-module.exports = {
+/** @type {import("electron").BrowserWindow} */
+let mainWindow
+
+export function getMainWindow () {
+  return mainWindow
+}
+
+export const MainWindow = {
   create: function () {
     let mainWindowState = windowStateKeeper({ // Remember the positiona and size of the window
       defaultWidth: 1400,
@@ -36,21 +43,21 @@ module.exports = {
       frame: false,
       icon: global.AppIcon,
       webPreferences: {
-        preload: path.join(app.getAppPath(), 'src/process/preload.js'),
+        preload: path.join(app.getAppPath(), 'src/process/preload.mjs'),
         webviewTag: true
       }
     })
     mainWindow.loadFile('src/base/index.html')
 
     // IPC Functions
-    ipcMain.on('ReloadApp', () => {mainWindow.reload(); Platform.CSS()})
+    ipcMain.on('ReloadApp', () => {mainWindow.reload(); applyDirectStyling();})
     ipcMain.on('MaximizeWindow', () => {mainWindow.maximize()})
     ipcMain.on('UnmaximizeWindow', () => {mainWindow.restore()})
     ipcMain.on('MinimizeWindow', () => {mainWindow.minimize()})
     ipcMain.on('OpenHelp', () => {shell.openExternal('https://github.com/author-more/penpot-desktop/wiki')})
     ipcMain.on('OpenOffline', () => {shell.openExternal('https://github.com/author-more/penpot-desktop/wiki/Self%E2%80%90hosting')})
     ipcMain.on('openTabMenu', (_event, tabId) => {
-      const tabMenu = menu.getTabMenu(tabId)
+      const tabMenu = getTabMenu(tabId)
       tabMenu.popup({
         window: mainWindow
       })
@@ -70,7 +77,7 @@ module.exports = {
     
     // Other Functions
     mainWindowState.manage(mainWindow)
-    menu.setAppMenu()
-    Platform.CSS()
+    setAppMenu()
+    applyDirectStyling();
   }
 }
