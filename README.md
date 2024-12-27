@@ -25,8 +25,9 @@ It delivers a desktop-like experience for Penpot users with the addition of inte
    - [Git](https://git-scm.com/) (optional)
 1. Clone the repository or download the source code.
 1. Navigate to the project's directory.
-1. Run `npm ci` to install packages.  
+1. Run `npm ci` to install packages.
    _Other package managers such as Yarn, PNPM, or Bun should work as well._
+1. (Optional) Run `npm run setup` to prepare development environment.
 1. (Optional) Run `npm run dev` to start the application in development mode. This will open a new window with the application running.
 
    > Note: Penpot Desktop is using ES Modules. Make sure to read the [ES Modules (ESM) in Electron guide](https://www.electronjs.org/docs/latest/tutorial/esm).
