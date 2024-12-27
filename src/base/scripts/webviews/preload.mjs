@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-nocheck The file requires a review, before dedicating time to add quality types.
 
 const { ipcRenderer } = require("electron");

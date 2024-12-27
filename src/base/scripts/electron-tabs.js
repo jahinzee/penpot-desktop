@@ -78,7 +78,7 @@ async function prepareTabReloadButton() {
 
 	reloadButton?.addEventListener("click", () => {
 		const tab = tabGroup?.getActiveTab();
-		/** @type {WebviewTag} */ (tab?.webview).reload();
+		/** @type {WebviewTag} */ (tab?.webview)?.reload();
 	});
 }
 
@@ -156,11 +156,11 @@ async function handleTabMenuAction({ command, tabId }) {
 	const tab = tabGroup?.getTab(tabId);
 
 	if (command === "reload-tab") {
-		/** @type {WebviewTag} */ (tab?.webview).reload();
+		/** @type {WebviewTag} */ (tab?.webview)?.reload();
 	}
 
 	if (command === "duplicate-tab") {
-		const url = /** @type {WebviewTag} */ (tab?.webview).getURL();
+		const url = /** @type {WebviewTag} */ (tab?.webview)?.getURL();
 		openTab(url);
 	}
 

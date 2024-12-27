@@ -1,4 +1,4 @@
-import { app, Menu } from "electron";
+import { app, Menu, shell } from "electron";
 import { applyDirectStyling } from "./platform.js";
 import { getMainWindow } from "./window.js";
 
@@ -78,8 +78,8 @@ export function setAppMenu() {
 		],
 	};
 
-	if (isMacOs) {
-		Array.isArray(editMenu.submenu) &&
+	if (Array.isArray(editMenu.submenu)) {
+		if (isMacOs) {
 			editMenu.submenu.push(
 				{ role: "pasteAndMatchStyle" },
 				{ role: "delete" },
@@ -90,13 +90,13 @@ export function setAppMenu() {
 					submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
 				},
 			);
-	} else {
-		Array.isArray(editMenu.submenu) &&
+		} else {
 			editMenu.submenu.push(
 				{ role: "delete" },
 				{ type: "separator" },
 				{ role: "selectAll" },
 			);
+		}
 	}
 
 	/** @type {MenuItemConstructorOptions} */
@@ -147,8 +147,8 @@ export function setAppMenu() {
 		submenu: [{ role: "minimize" }, { role: "zoom" }],
 	};
 
-	if (isMacOs) {
-		Array.isArray(windowMenu.submenu) &&
+	if (Array.isArray(windowMenu.submenu)) {
+		if (isMacOs) {
 			windowMenu.submenu.push(
 				{ type: "separator" },
 				{ role: "front" },
@@ -158,12 +158,12 @@ export function setAppMenu() {
 					accelerator: "CmdOrCtrl+Shift+W",
 				},
 			);
-	} else {
-		Array.isArray(windowMenu.submenu) &&
+		} else {
 			windowMenu.submenu.push({
 				role: "close",
 				accelerator: "CmdOrCtrl+Shift+W",
 			});
+		}
 	}
 
 	/** @type {MenuItemConstructorOptions} */
@@ -172,40 +172,33 @@ export function setAppMenu() {
 		submenu: [
 			{
 				label: "User Guide",
-				click: async () => {
-					const { shell } = require("electron");
-					await shell.openExternal("https://help.penpot.app/user-guide/");
+				click: () => {
+					shell.openExternal("https://help.penpot.app/user-guide/");
 				},
 			},
 			{
 				label: "FAQ",
-				click: async () => {
-					const { shell } = require("electron");
-					await shell.openExternal("https://help.penpot.app/faqs");
+				click: () => {
+					shell.openExternal("https://help.penpot.app/faqs");
 				},
 			},
 			{
 				label: "Learn to Self-host",
-				click: async () => {
-					const { shell } = require("electron");
-					await shell.openExternal("https://penpot.app/self-host");
+				click: () => {
+					shell.openExternal("https://penpot.app/self-host");
 				},
 			},
 			{
 				label: "Penpot Community",
-				click: async () => {
-					const { shell } = require("electron");
-					await shell.openExternal("https://community.penpot.app/");
+				click: () => {
+					shell.openExternal("https://community.penpot.app/");
 				},
 			},
 			{ type: "separator" },
 			{
 				label: "Source Code",
-				click: async () => {
-					const { shell } = require("electron");
-					await shell.openExternal(
-						"https://github.com/author-more/penpot-desktop",
-					);
+				click: () => {
+					shell.openExternal("https://github.com/author-more/penpot-desktop");
 				},
 			},
 		],
