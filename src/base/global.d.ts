@@ -1,3 +1,3 @@
-type Ipc = import("../types/ipc.ts");
-
-declare var api: Ipc.Api
+interface Window {
+	api: import("../types/ipc.js").Api;
+}

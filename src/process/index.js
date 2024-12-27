@@ -7,6 +7,6 @@ await import("./navigation.js");
 app.enableSandbox();
 
 app.whenReady().then(() => {
-  electronUpdater.autoUpdater.checkForUpdatesAndNotify();
-  MainWindow.create();
+	electronUpdater.autoUpdater.checkForUpdatesAndNotify();
+	MainWindow.create();
 });

@@ -5,10 +5,10 @@
  * @param {{ charactersPerLine?: number }} options
  */
 export function toMultiline(
-  string,
-  { charactersPerLine } = { charactersPerLine: 75 }
+	string,
+	{ charactersPerLine } = { charactersPerLine: 75 },
 ) {
-  const pattern = new RegExp(`.{0,${charactersPerLine}}`, "g");
+	const pattern = new RegExp(`.{0,${charactersPerLine}}`, "g");
 
-  return string.match(pattern)?.join("\n");
+	return string.match(pattern)?.join("\n");
 }

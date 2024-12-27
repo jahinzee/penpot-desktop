@@ -1,23 +1,36 @@
 <html>
-    <head>
-        <title>Penpot Desktop</title>
-        <link rel="stylesheet" href="./styles/index.css"/>
-        <link rel="stylesheet" href="../../node_modules/@shoelace-style/shoelace/cdn/themes/dark.css" onload="document.documentElement.classList.add('sl-theme-dark')"/>
-        <script src="./scripts/main.js" type="module"></script>
-    </head> 
-    <body>
-        <drag></drag>
-        <sl-include id="include-controls" src="./components/controls.html"></sl-include>
-        <sl-include id="include-titlebar" src="./components/titlebar.html"></sl-include>
-        <sl-include src="./components/splash.html"></sl-include>
-        <sl-include id="include-tabs" src="./components/tabs.html"></sl-include>
-        <sl-include id="include-settings" src="./components/settings.html"></sl-include>
+	<head>
+		<title>Penpot Desktop</title>
+		<link rel="stylesheet" href="./styles/index.css" />
+		<link
+			rel="stylesheet"
+			href="../../node_modules/@shoelace-style/shoelace/cdn/themes/dark.css"
+			onload="document.documentElement.classList.add('sl-theme-dark')"
+		/>
+		<script src="./scripts/main.js" type="module"></script>
+	</head>
+	<body>
+		<drag></drag>
+		<sl-include
+			id="include-controls"
+			src="./components/controls.html"
+		></sl-include>
+		<sl-include
+			id="include-titlebar"
+			src="./components/titlebar.html"
+		></sl-include>
+		<sl-include src="./components/splash.html"></sl-include>
+		<sl-include id="include-tabs" src="./components/tabs.html"></sl-include>
+		<sl-include
+			id="include-settings"
+			src="./components/settings.html"
+		></sl-include>
 
-        <div class="no-tabs-exist" style="display: none;">
-            <img src="./assets/penpot-logo/logo-white.png"/>
-            <h2>No tabs are opened</h2>
-            <p>Add a new tab to start making awesome things.</p>
-            <button id="open-tab">Create a tab</button>
-        </div>
-    </body>
+		<div class="no-tabs-exist" style="display: none">
+			<img src="./assets/penpot-logo/logo-white.png" />
+			<h2>No tabs are opened</h2>
+			<p>Add a new tab to start making awesome things.</p>
+			<button id="open-tab">Create a tab</button>
+		</div>
+	</body>
 </html>

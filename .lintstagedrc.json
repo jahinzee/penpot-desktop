@@ -1,0 +1,4 @@
+{
+	"*.{js,mjs,ts}": "npm run lint:open",
+	"*": "npm run format:open"
+}

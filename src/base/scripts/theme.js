@@ -9,86 +9,86 @@ import { requestTabTheme } from "./electron-tabs.js";
 
 const THEME_STORE_KEY = "theme";
 export const THEME_TAB_EVENTS = Object.freeze({
-  REQUEST_UPDATE: "theme-request-update",
-  UPDATE: "theme-update",
+	REQUEST_UPDATE: "theme-request-update",
+	UPDATE: "theme-update",
 });
 
 /** @type {ThemeSetting | null} */
 let currentThemeSetting = null;
 
 export function initTheme() {
-  currentThemeSetting = /** @type {ThemeSetting | null} */ (
-    localStorage.getItem(THEME_STORE_KEY)
-  );
+	currentThemeSetting = /** @type {ThemeSetting | null} */ (
+		localStorage.getItem(THEME_STORE_KEY)
+	);
 
-  if (currentThemeSetting) {
-    setTheme(currentThemeSetting);
-  }
+	if (currentThemeSetting) {
+		setTheme(currentThemeSetting);
+	}
 
-  prepareForm(currentThemeSetting);
+	prepareForm(currentThemeSetting);
 }
 
 /**
  * @param {ThemeSetting | null} themeSetting
  */
 async function prepareForm(themeSetting) {
-  const { themeSelect } = await getThemeSettingsForm();
+	const { themeSelect } = await getThemeSettingsForm();
 
-  if (themeSelect && themeSetting) {
-    themeSelect.value = themeSetting;
-  }
+	if (themeSelect && themeSetting) {
+		themeSelect.value = themeSetting;
+	}
 
-  themeSelect?.addEventListener("change", (event) => {
-    const { target } = event;
-    const value = target instanceof HTMLSelectElement && target.value;
+	themeSelect?.addEventListener("change", (event) => {
+		const { target } = event;
+		const value = target instanceof HTMLSelectElement && target.value;
 
-    if (isThemeSetting(value)) {
-      const isTabTheme = value === "tab";
+		if (isThemeSetting(value)) {
+			const isTabTheme = value === "tab";
 
-      currentThemeSetting = value;
-      localStorage.setItem(THEME_STORE_KEY, value);
+			currentThemeSetting = value;
+			localStorage.setItem(THEME_STORE_KEY, value);
 
-      if (isTabTheme) {
-        requestTabTheme();
-        return;
-      }
+			if (isTabTheme) {
+				requestTabTheme();
+				return;
+			}
 
-      setTheme(value);
-    } else {
-      currentThemeSetting = null;
-      localStorage.removeItem(THEME_STORE_KEY);
-    }
-  });
+			setTheme(value);
+		} else {
+			currentThemeSetting = null;
+			localStorage.removeItem(THEME_STORE_KEY);
+		}
+	});
 }
 
 /**
  * @param {string} themeId
  */
 function setTheme(themeId) {
-  if (isThemeId(themeId)) {
-    window.api.setTheme(themeId);
-  }
+	if (isThemeId(themeId)) {
+		window.api.setTheme(themeId);
+	}
 }
 
 async function getThemeSettingsForm() {
-  const themeSelect = await getIncludedElement(
-    "#theme-select",
-    "#include-settings",
-    HTMLSelectElement
-  );
+	const themeSelect = await getIncludedElement(
+		"#theme-select",
+		"#include-settings",
+		HTMLSelectElement,
+	);
 
-  return { themeSelect };
+	return { themeSelect };
 }
 
 /**
  * @param {string} inTabTheme
  */
 export function handleInTabThemeUpdate(inTabTheme) {
-  const shouldUseInTabTheme = currentThemeSetting === "tab";
+	const shouldUseInTabTheme = currentThemeSetting === "tab";
 
-  if (shouldUseInTabTheme) {
-    setTheme(inTabTheme);
-  }
+	if (shouldUseInTabTheme) {
+		setTheme(inTabTheme);
+	}
 }
 
 /**
@@ -97,9 +97,9 @@ export function handleInTabThemeUpdate(inTabTheme) {
  * @returns {value is ThemeId}
  */
 function isThemeId(value) {
-  return (
-    typeof value === "string" && ["light", "dark", "system"].includes(value)
-  );
+	return (
+		typeof value === "string" && ["light", "dark", "system"].includes(value)
+	);
 }
 
 /**
@@ -108,8 +108,8 @@ function isThemeId(value) {
  * @returns {value is ThemeSetting}
  */
 function isThemeSetting(value) {
-  return (
-    typeof value === "string" &&
-    ["light", "dark", "system", "tab"].includes(value)
-  );
+	return (
+		typeof value === "string" &&
+		["light", "dark", "system", "tab"].includes(value)
+	);
 }

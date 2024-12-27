@@ -48,7 +48,6 @@ linux:
     # - pacman # For Arch
     - AppImage # Universal
     # - snap # Snapcraft Store - Can't build arm version on amd64 machines(comment Snap out if you plan to)
-
 # snap:
 #   allowNativeWayland: true
 #   confinement: "strict"
