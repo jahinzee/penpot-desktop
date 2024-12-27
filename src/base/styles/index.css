@@ -23,7 +23,8 @@
 
 	.titlebar,
 	.controls,
-	#settings > * {
+	#settings > *,
+	.no-tabs-exist {
 		filter: var(--theme-filter, none);
 	}
 
