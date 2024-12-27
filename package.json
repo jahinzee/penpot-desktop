@@ -27,8 +27,11 @@
 		"dev": "electron .",
 		"format": "prettier . --write",
 		"format:open": "prettier --write --ignore-unknown",
+		"format:check": "prettier . --check",
 		"lint": "eslint .",
-		"lint:open": "eslint"
+		"lint:open": "eslint",
+		"compile:check": "tsc --noEmit",
+		"check": "npm run format:check && npm run lint && tsc"
 	},
 	"dependencies": {
 		"@shoelace-style/shoelace": "^2.18.0",
