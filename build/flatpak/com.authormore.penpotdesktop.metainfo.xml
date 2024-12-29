@@ -14,9 +14,9 @@
             Penpot Desktop is an unofficial desktop application for the open-source UI/UX design tool, Penpot.
         </p>
         <p>
-          It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to 
-          conveniently traverse back and forth between projects. Offline support is available through the 
-          &quot;select your own instance&quot; option, and theme settings can be applied to either the 
+          It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to
+          conveniently traverse back and forth between projects. Offline support is available through the
+          &quot;select your own instance&quot; option, and theme settings can be applied to either the
           entire desktop app or just the Penpot dashboard.
         </p>
     </description>
@@ -53,13 +53,27 @@
         <internet>offline-only</internet>
     </supports>
     <releases>
+		    <release version="v0.8.0" date="2024-12-29">
+            <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.8.0</url>
+            <description>
+                <p>Features</p>
+                <ul>
+                    <li>Added light/dark mode support.</li>
+                </ul>
+                <p>Internal</p>
+                <ul>
+                    <li>Moved the code base to ES Modules.</li>
+                    <li>Added linting and formatting for code and commit messages.</li>
+                </ul>
+            </description>
+        </release>
         <release version="v0.7.0" date="2024-12-15">
             <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.7.0</url>
             <description>
                 <p>Features</p>
                 <ul>
                     <li>Added a tab management menu.</li>
-                    <li>Added a context menu for a tab item. It gives you an option to reload or duplicate a tab, or batch 
+                    <li>Added a context menu for a tab item. It gives you an option to reload or duplicate a tab, or batch
                     close [other, right, left] tabs in relation to the targeted one.</li>
                 </ul>
                 <p>Improvements</p>
@@ -79,9 +93,9 @@
                 <p>Features:</p>
                 <ul>
                     <li>Added navigation requests action prompt.</li>
-                    <li>Added a question system dialog for navigation requests that can't be resolved based on the lists of 
-                    allowed origins and URLs. It lets the user decide how a link that can't be predefined should be handled 
-                    (e.g. links in plug-ins and custom OpenID providers), with options to cancel, open, or open in a 
+                    <li>Added a question system dialog for navigation requests that can't be resolved based on the lists of
+                    allowed origins and URLs. It lets the user decide how a link that can't be predefined should be handled
+                    (e.g. links in plug-ins and custom OpenID providers), with options to cancel, open, or open in a
                     browser (depending on the request).</li>
                 </ul>
             </description>
@@ -108,13 +122,13 @@
             <description>
                 <p>Fixes:</p>
                 <ul>
-                    <li>Fixed links to open in a new tab (e.g. "Open in a new tab" from the project menu, Preview 
+                    <li>Fixed links to open in a new tab (e.g. "Open in a new tab" from the project menu, Preview
                     mode) or a default browser, instead of a generic new window.</li>
                     <li>Fixed UI events to consequently interact with the tab bar e.g. showing "no open tabs" page when closing the last tab.</li>
                 </ul>
                 <p>Security:</p>
                 <ul>
-                    <li>Fixed in-app navigation to have a limited range. 
+                    <li>Fixed in-app navigation to have a limited range.
                     Navigation within the app is now limited to a set of allowed addresses.</li>
                     <li>Fixed the webview tag options to go through a verification process.</li>
                 </ul>
@@ -130,13 +144,13 @@
                 <p>New features:</p>
                 <ul>
                     <li>Added reload button.</li>
-                    <li>Tab reload functionality is now available under a button in the top section of the app 
+                    <li>Tab reload functionality is now available under a button in the top section of the app
                     (to the left of the tab bar).</li>
                 </ul>
                 <p>Security:</p>
                 <ul>
                     <li>Enabled process sandboxing.</li>
-                    <li>Tab reload functionality is now available under a button in the top section of the app 
+                    <li>Tab reload functionality is now available under a button in the top section of the app
                     (to the left of the tab bar).</li>
                 </ul>
                 <p>Fixes:</p>
@@ -153,7 +167,7 @@
                     <li>Restored security warnings.</li>
                     <li>The app now displays security warnings when running in development mode.</li>
                     <li>Added build artifacts upload.</li>
-                    <li> The CI pipeline now stores build artifacts, which are then available for download on a 
+                    <li> The CI pipeline now stores build artifacts, which are then available for download on a
                     job's report page. The artifacts are intended for testing purposes, not for production use.</li>
                 </ul>
             </description>
@@ -180,7 +194,7 @@
         </release>
         <release version="0.0.1" date="2024-10-22">
             <description>
-                <p>This is a legacy release, it serves as an archive and a reference for those who have 
+                <p>This is a legacy release, it serves as an archive and a reference for those who have
                 previously used this version of the application and for future development.</p>
                 <p>Important Notes:</p>
                 <ul>
