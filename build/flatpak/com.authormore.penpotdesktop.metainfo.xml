@@ -10,15 +10,15 @@
         <name>Author More</name>
     </developer>
     <description>
-        <p>
-            Penpot Desktop is an unofficial desktop application for the open-source UI/UX design tool, Penpot.
-        </p>
-        <p>
-          It delivers a desktop-like experience for Penpot users with the addition of integrated tabs to
-          conveniently traverse back and forth between projects. Offline support is available through the
-          &quot;select your own instance&quot; option, and theme settings can be applied to either the
-          entire desktop app or just the Penpot dashboard.
-        </p>
+			<p>Penpot Desktop is an unofficial desktop application for the open-source design tool, Penpot.</p>
+			<p>It provides you with access to the functionality of the browser version of Penpot with an experience of a desktop application. It comes with</p>
+			<ul>
+				<li>system-level application experience e.g. a dedicated window, file extension association,</li>
+				<li>versatile dark-light mode setup,</li>
+				<li>tab interface for easy navigation between projects,</li>
+				<li>ability to connect to different instances e.g. officially hosted, local for offline work,</li>
+				<li>and more are coming.</li>
+			</ul>
     </description>
     <launchable type="desktop-id">com.authormore.penpotdesktop.desktop</launchable>
     <provides>
