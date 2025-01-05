@@ -13,6 +13,10 @@ export const THEME_TAB_EVENTS = Object.freeze({
 	REQUEST_UPDATE: "theme-request-update",
 	UPDATE: "theme-update",
 });
+const THEME_MEDIA = Object.freeze({
+	LIGHT: "(prefers-color-scheme: light)",
+	DARK: "(prefers-color-scheme: dark)",
+});
 
 /** @type {ThemeSetting | null} */
 let currentThemeSetting = null;
@@ -27,6 +31,35 @@ export function initTheme() {
 	}
 
 	prepareForm(currentThemeSetting);
+	syncThemeClass();
+}
+
+function syncThemeClass() {
+	/**
+	 * @function
+	 * @param {MediaQueryListEvent} arg0
+	 */
+	const mediaMatchListener = ({ matches, media }) => {
+		if (!matches) {
+			return;
+		}
+
+		if (media === THEME_MEDIA.LIGHT) {
+			document.documentElement.classList.remove("sl-theme-dark");
+			document.documentElement.classList.add("sl-theme-light");
+			return;
+		}
+
+		if (media === THEME_MEDIA.DARK) {
+			document.documentElement.classList.remove("sl-theme-light");
+			document.documentElement.classList.add("sl-theme-dark");
+		}
+	};
+
+	Object.values(THEME_MEDIA).forEach((media) => {
+		const match = matchMedia(media);
+		match.addEventListener("change", mediaMatchListener);
+	});
 }
 
 /**
