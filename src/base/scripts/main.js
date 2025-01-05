@@ -3,6 +3,7 @@ import "../../../node_modules/electron-tabs/dist/electron-tabs.js";
 
 import { initTabs } from "./electron-tabs.js";
 import { initInstance } from "./instance.js";
+import { initSettings } from "./settings.js";
 import { initTheme } from "./theme.js";
 import { initToggles } from "./toggles.js";
 
@@ -11,4 +12,5 @@ window.addEventListener("DOMContentLoaded", () => {
 	initInstance();
 	initTheme();
 	initToggles();
+	initSettings();
 });

@@ -1,7 +1,7 @@
 import type { NativeTheme } from "electron";
 
 export type Api = {
-	send: (channel: string, data: unknown) => void;
+	send: (channel: string, data?: unknown) => void;
 	setTheme: (themeId: NativeTheme["themeSource"]) => void;
 	onOpenTab: (callback: (href: string) => void) => void;
 	onTabMenuAction: (

@@ -4,6 +4,7 @@
  * @typedef {import("electron").IpcMessageEvent} IpcMessageEvent
  */
 
+import { SlSelect } from "../../../node_modules/@shoelace-style/shoelace/cdn/shoelace.js";
 import { getIncludedElement } from "./dom.js";
 import { requestTabTheme } from "./electron-tabs.js";
 
@@ -35,12 +36,12 @@ async function prepareForm(themeSetting) {
 	const { themeSelect } = await getThemeSettingsForm();
 
 	if (themeSelect && themeSetting) {
-		themeSelect.value = themeSetting;
+		themeSelect.setAttribute("value", themeSetting);
 	}
 
-	themeSelect?.addEventListener("change", (event) => {
+	themeSelect?.addEventListener("sl-change", (event) => {
 		const { target } = event;
-		const value = target instanceof HTMLSelectElement && target.value;
+		const value = target instanceof SlSelect && target.value;
 
 		if (isThemeSetting(value)) {
 			const isTabTheme = value === "tab";
@@ -74,7 +75,7 @@ async function getThemeSettingsForm() {
 	const themeSelect = await getIncludedElement(
 		"#theme-select",
 		"#include-settings",
-		HTMLSelectElement,
+		SlSelect,
 	);
 
 	return { themeSelect };
