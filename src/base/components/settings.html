@@ -1,49 +1,26 @@
-<div id="settings" class="dropdown-modal">
-	<div class="settings-section">
-		<div class="settings-section-header">
-			<h2>Instance</h2>
-		</div>
-		<div class="settings-section-content">
-			<input
-				style="width: -webkit-fill-available"
+<sl-drawer id="settings" class="settings" placement="start" label="Settings">
+	<div>
+		<form id="instance-form" class="inline">
+			<sl-input
 				id="instance-field"
+				label="Instance"
 				type="url"
-				pattern="https?://.*"
 				placeholder="https://design.penpot.app/"
-				value=""
-			/>
-			<input id="instance-save" type="button" value="Save" />
-		</div>
+				size="small"
+			></sl-input>
+			<sl-button id="instance-save" type="submit" size="small">Save</sl-button>
+		</form>
+
+		<sl-select id="theme-select" label="Theme" size="small">
+			<sl-option value="light">Light</sl-option>
+			<sl-option value="dark">Dark</sl-option>
+			<sl-option value="system">System</sl-option>
+			<sl-option value="tab">Penpot</sl-option>
+		</sl-select>
 	</div>
-	<div class="settings-section">
-		<div class="settings-section-header">
-			<h2>Theme</h2>
-		</div>
-		<div id="theme" class="settings-section-content">
-			<select name="theme" id="theme-select">
-				<option value="light">Light</option>
-				<option value="dark">Dark</option>
-				<option value="system">System</option>
-				<option value="tab">Penpot</option>
-			</select>
-		</div>
-	</div>
-	<div class="settings-section">
-		<div class="settings-section-header">
-			<h2>Help</h2>
-		</div>
-		<div class="settings-section-content">
-			<div
-				style="
-					display: flex;
-					gap: 12px;
-					justify-content: space-evenly;
-					flex: auto;
-				"
-			>
-				<a href="#" onclick="window.api.send('OpenHelp')">Help</a>
-				<a href="#" onclick="window.api.send('OpenOffline')">Selfhost</a>
-			</div>
-		</div>
-	</div>
-</div>
+
+	<sl-button-group class="footer" label="Help Center">
+		<sl-button id="open-docs" href="#" size="small">Documentation</sl-button>
+		<sl-button id="open-selfhost" href="#" size="small">Selfhost</sl-button>
+	</sl-button-group>
+</sl-drawer>

@@ -1,0 +1,23 @@
+.settings {
+	--sl-overlay-background-color: none;
+
+	&::part(body) {
+		display: grid;
+		align-content: space-between;
+	}
+
+	&::part(panel) {
+		--size: 20rem;
+
+		height: calc(100% - 42px);
+		top: unset;
+		bottom: 0;
+
+		box-shadow: unset;
+	}
+
+	.footer {
+		display: grid;
+		place-content: center;
+	}
+}
