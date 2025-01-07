@@ -38,42 +38,6 @@ body {
 	font-family: arial;
 }
 
-.titlebar {
-	position: fixed;
-	top: 0px;
-	right: 0px;
-	width: max-content;
-	text-align: right;
-	margin: 4px 4px 0px 0px;
-	cursor: default;
-	z-index: 5;
-	app-region: no-drag;
-	display: flex;
-
-	.linux-titlebar {
-		display: none;
-	}
-
-	button {
-		width: 32px;
-		height: 32px;
-		font-size: 0px;
-		border: none;
-		border-radius: 6px;
-		background: transparent;
-
-		&:hover {
-			background: #303236;
-		}
-
-		svg {
-			width: 16px;
-			height: 16px;
-			filter: invert(1);
-		}
-	}
-}
-
 sl-include.alert-modal {
 	position: fixed;
 	z-index: 50;
