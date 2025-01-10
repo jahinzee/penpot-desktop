@@ -92,7 +92,7 @@ export const MainWindow = {
 		ipcMain.on("set-theme", (_event, themeId) => {
 			nativeTheme.themeSource = themeId;
 
-			mainWindow.setTitleBarOverlay({
+			mainWindow.setTitleBarOverlay?.({
 				...TITLEBAR_OVERLAY.BASE,
 				...(nativeTheme.shouldUseDarkColors
 					? TITLEBAR_OVERLAY.DARK
