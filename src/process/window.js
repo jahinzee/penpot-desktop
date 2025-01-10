@@ -4,6 +4,21 @@ import path from "path";
 
 import { setAppMenu, getTabMenu } from "./menu.js";
 import { applyDirectStyling } from "./platform.js";
+import { deepFreeze } from "../tools/object.js";
+
+const TITLEBAR_OVERLAY = deepFreeze({
+	BASE: {
+		height: 42,
+	},
+	DARK: {
+		color: "#18181a",
+		symbolColor: "#ffffff",
+	},
+	LIGHT: {
+		color: "#ffffff",
+		symbolColor: "#000000",
+	},
+});
 
 /** @type {import("electron").BrowserWindow} */
 let mainWindow;
@@ -34,12 +49,7 @@ export const MainWindow = {
 			// Titlebar
 			titleBarStyle: "hidden",
 			trafficLightPosition: { x: 16, y: 12 }, // for macOS
-			titleBarOverlay: {
-				// For Windows
-				color: "#1f1f1f",
-				symbolColor: "white",
-				height: 40,
-			},
+			titleBarOverlay: TITLEBAR_OVERLAY.BASE,
 			// Other Options
 			autoHideMenuBar: true,
 			frame: false,
@@ -81,6 +91,13 @@ export const MainWindow = {
 		});
 		ipcMain.on("set-theme", (_event, themeId) => {
 			nativeTheme.themeSource = themeId;
+
+			mainWindow.setTitleBarOverlay?.({
+				...TITLEBAR_OVERLAY.BASE,
+				...(nativeTheme.shouldUseDarkColors
+					? TITLEBAR_OVERLAY.DARK
+					: TITLEBAR_OVERLAY.LIGHT),
+			});
 		});
 
 		if (process.platform === "darwin") {

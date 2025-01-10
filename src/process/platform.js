@@ -16,20 +16,4 @@ export function applyDirectStyling() {
 			);
 		}, 1500);
 	}
-
-	if (process.platform === "linux") {
-		setTimeout(() => {
-			mainWindow.webContents.executeJavaScript(
-				`document.querySelector(".linux-titlebar").style.display = 'block'`,
-			);
-		}, 1500);
-	}
-
-	if (process.platform === "win32") {
-		setTimeout(() => {
-			mainWindow.webContents.executeJavaScript(
-				`document.querySelector(".titlebar").style.right = '145px'`,
-			);
-		}, 1500);
-	}
 }
