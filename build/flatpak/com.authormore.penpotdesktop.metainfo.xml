@@ -53,6 +53,29 @@
         <internet>offline-only</internet>
     </supports>
     <releases>
+				<release version="v0.9.0" date="2025-01-12">
+            <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.9.0</url>
+            <description>
+								<p>Features</p>
+								<ul>
+										<li>Added the new settings side bar.</li>
+								</ul>
+								<p>Fixes</p>
+								<ul>
+										<li>Fixed the window controls to match preferred colour scheme, with the app's theme colours.</li>
+										<li>[Linux] Fixed the window to utilise a single set of controls - the native ones.</li>
+										<li>[macOS] Fixed the installer to show the project's license.</li>
+								</ul>
+								<p>Improvements</p>
+								<ul>
+										<li>Updated Electron to the latest version.</li>
+								</ul>
+								<p>Internal</p>
+								<ul>
+										<li>Updated development dependencies.</li>
+								</ul>
+            </description>
+        </release>
 		    <release version="v0.8.0" date="2024-12-29">
             <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.8.0</url>
             <description>
