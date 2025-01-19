@@ -42,8 +42,6 @@ export const MainWindow = {
 			height: mainWindowState.height,
 			minWidth: 1000,
 			minHeight: 400,
-			// Theme
-			darkTheme: true,
 			transparent: global.transparent,
 			vibrancy: "sidebar",
 			// Titlebar

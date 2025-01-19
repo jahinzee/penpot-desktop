@@ -11,7 +11,7 @@ const INSTANCE_EVENTS = Object.freeze({
 });
 
 export async function initInstance() {
-	const instances = await window.api.getInstances();
+	const instances = await window.api.getSetting("instances");
 	const { origin } = instances[0] || {};
 
 	await setDefaultTab(origin);

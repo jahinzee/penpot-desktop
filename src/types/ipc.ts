@@ -1,10 +1,14 @@
 import type { NativeTheme } from "electron";
-import { Instance } from "../process/settings.js";
+import { Settings } from "../process/settings.js";
 
 export type Api = {
 	send: (channel: string, data?: unknown) => void;
 	setTheme: (themeId: NativeTheme["themeSource"]) => void;
-	getInstances: () => Promise<Instance[]>;
+	getSetting: <S extends keyof Settings>(setting: S) => Promise<Settings[S]>;
+	setSetting: <S extends keyof Settings>(
+		setting: S,
+		value: Settings[S],
+	) => void;
 	onOpenTab: (callback: (href: string) => void) => void;
 	onTabMenuAction: (
 		callback: ({ command, tabId }: TabContextMenuAction) => void,

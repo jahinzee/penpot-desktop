@@ -43,10 +43,6 @@ ipcMain.on("removeInstance", (event, instance) => {
 	}
 });
 
-ipcMain.handle("getInstance", () => {
-	return settings.instances;
-});
-
 app.on("web-contents-created", (event, contents) => {
 	const mainWindow = getMainWindow();
 
