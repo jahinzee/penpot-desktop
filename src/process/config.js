@@ -3,15 +3,13 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 /**
- * @typedef {Object} Config
- */
-
-/**
+ * @template Config
+ *
  * @param {string} configName
  *
  * @returns {Promise<Config | undefined>}
  */
-export async function getConfig(configName) {
+export async function readConfig(configName) {
 	const configFilePath = getConfigFilePath(configName);
 
 	try {
@@ -22,34 +20,26 @@ export async function getConfig(configName) {
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : "Failed to get the config.";
-		console.error(`[ERROR] [config:get:${configName}] ${message}`);
+		console.error(`[ERROR] [config:read:${configName}] ${message}`);
 	}
 }
 
 /**
+ * @template Config
+ *
  * @param {string} configName
  * @param {Partial<Config>} config
- *
- * @returns
  */
-export function updateConfig(configName, config) {
+export function writeConfig(configName, config) {
 	const configFilePath = getConfigFilePath(configName);
-	const currentConfig = getConfig(configName);
 
 	try {
-		const configJSON = JSON.stringify(
-			{
-				...currentConfig,
-				...config,
-			},
-			null,
-			"\t",
-		);
+		const configJSON = JSON.stringify(config, null, "\t");
 		writeFile(configFilePath, configJSON, "utf8");
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : "Failed to save the  config.";
-		console.error(`[ERROR] [config:update:${configName}] ${message}`);
+		console.error(`[ERROR] [config:write:${configName}] ${message}`);
 	}
 }
 

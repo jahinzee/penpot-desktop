@@ -26,6 +26,9 @@ contextBridge.exposeInMainWorld(
 		setTheme: (themeId) => {
 			ipcRenderer.send("set-theme", themeId);
 		},
+		getInstances: () => {
+			return ipcRenderer.invoke("getInstance");
+		},
 		onOpenTab: (callback) =>
 			ipcRenderer.on("open-tab", (_event, value) => callback(value)),
 		onTabMenuAction: (callback) =>

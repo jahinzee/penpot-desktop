@@ -5,27 +5,34 @@ import {
 	SlInput,
 } from "../../../node_modules/@shoelace-style/shoelace/cdn/shoelace.js";
 
-const INSTANCE_STORE_KEY = "Instance";
 const INSTANCE_EVENTS = Object.freeze({
 	REGISTER: "registerInstance",
 	REMOVE: "removeInstance",
 });
 
 export async function initInstance() {
-	const savedInstance = await registerSavedInstance();
+	const instances = await window.api.getInstances();
+	const { origin } = instances[0] || {};
 
-	await setDefaultTab(savedInstance);
-	openTab(savedInstance);
-	prepareForm();
+	await setDefaultTab(origin);
+	openTab(origin);
+	prepareForm(origin);
 }
 
-async function prepareForm() {
-	const { instanceForm } = await getInstanceSettingsForm();
+/**
+ * @param {string =} origin
+ */
+async function prepareForm(origin) {
+	const { instanceForm, instanceField } = await getInstanceSettingsForm();
 
 	instanceForm?.addEventListener("submit", (event) => {
 		event.preventDefault();
 		saveInstance();
 	});
+
+	if (instanceField && origin) {
+		instanceField.value = origin;
+	}
 }
 
 async function saveInstance() {
@@ -33,17 +40,10 @@ async function saveInstance() {
 	const instance = instanceField?.value;
 
 	if (instance) {
-		localStorage.setItem(INSTANCE_STORE_KEY, instance);
 		window.api.send(INSTANCE_EVENTS.REGISTER, instance);
 		await setDefaultTab(instance);
 	} else {
-		const savedInstance = localStorage.getItem(INSTANCE_STORE_KEY);
-
-		if (savedInstance) {
-			window.api.send(INSTANCE_EVENTS.REMOVE, savedInstance);
-		}
-
-		localStorage.removeItem(INSTANCE_STORE_KEY);
+		window.api.send(INSTANCE_EVENTS.REMOVE);
 		await setDefaultTab();
 	}
 
@@ -56,22 +56,6 @@ async function saveInstance() {
 			instanceSaveButton.removeAttribute("variant");
 			instanceSaveButton.innerText = "Save";
 		}, 1200);
-	}
-}
-
-async function registerSavedInstance() {
-	const savedInstance = localStorage.getItem(INSTANCE_STORE_KEY);
-
-	if (savedInstance) {
-		const { instanceField } = await getInstanceSettingsForm();
-
-		window.api.send(INSTANCE_EVENTS.REGISTER, savedInstance);
-
-		if (instanceField) {
-			instanceField.value = savedInstance;
-		}
-
-		return savedInstance;
 	}
 }
 

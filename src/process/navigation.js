@@ -3,6 +3,7 @@ import { URL } from "url";
 import { join } from "path";
 import { toMultiline } from "./string.js";
 import { getMainWindow } from "./window.js";
+import { settings } from "./settings.js";
 
 // Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
 const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
@@ -25,14 +26,10 @@ const ALLOWED_EXTERNAL_URLS = Object.freeze([
 	"https://github.com/penpot/penpot",
 ]);
 
-/** @type {Set<string>} */
-const userInstances = new Set();
-
 ipcMain.on("registerInstance", (event, instance) => {
 	try {
-		const url = new URL(instance);
-		userInstances.clear();
-		userInstances.add(url.origin);
+		const { origin } = new URL(instance);
+		settings.instances = [{ origin }];
 	} catch (error) {
 		console.error(`[ERROR] [IPC.registerInstance] Failed with: ${instance}`);
 	}
@@ -40,11 +37,14 @@ ipcMain.on("registerInstance", (event, instance) => {
 
 ipcMain.on("removeInstance", (event, instance) => {
 	try {
-		const url = new URL(instance);
-		userInstances.delete(url.origin);
+		settings.instances = [];
 	} catch (error) {
 		console.error(`[ERROR] [IPC.removeInstance] Failed with: ${instance}`);
 	}
+});
+
+ipcMain.handle("getInstance", () => {
+	return settings.instances;
 });
 
 app.on("web-contents-created", (event, contents) => {
@@ -55,7 +55,7 @@ app.on("web-contents-created", (event, contents) => {
 		const parsedUrl = new URL(url);
 		const isAllowedOrigin = [
 			...ALLOWED_INTERNAL_ORIGINS,
-			...userInstances,
+			...getUserInstanceOrigins(settings),
 		].includes(parsedUrl.origin);
 		const isAllowedExternal = ALLOWED_EXTERNAL_URLS.includes(parsedUrl.href);
 		const isAllowedNavigation = isAllowedOrigin || isAllowedExternal;
@@ -97,7 +97,7 @@ app.on("web-contents-created", (event, contents) => {
 		const isAllowedOrigin = [
 			...ALLOWED_INTERNAL_ORIGINS,
 			...ALLOWED_AUTH_ORIGINS,
-			...userInstances,
+			...getUserInstanceOrigins(settings),
 		].includes(parsedUrl.origin);
 
 		if (!isAllowedOrigin) {
@@ -114,7 +114,10 @@ app.on("web-contents-created", (event, contents) => {
 	});
 
 	contents.on("will-redirect", (event) => {
-		const internalOrigins = [...ALLOWED_INTERNAL_ORIGINS, ...userInstances];
+		const internalOrigins = [
+			...ALLOWED_INTERNAL_ORIGINS,
+			...getUserInstanceOrigins(settings),
+		];
 		const currentUrl = contents.getURL();
 
 		// A new/empty tab doesn't have a URL before redirect to its initial page.
@@ -134,7 +137,10 @@ app.on("web-contents-created", (event, contents) => {
 			console.log("Clear non-instance origins data.");
 
 			contents.session.clearData({
-				excludeOrigins: [...OFFICIAL_INSTANCE_ORIGINS, ...userInstances],
+				excludeOrigins: [
+					...OFFICIAL_INSTANCE_ORIGINS,
+					...getUserInstanceOrigins(settings),
+				],
 			});
 		}
 	});
@@ -169,7 +175,7 @@ app.on("web-contents-created", (event, contents) => {
 		const parsedSrc = new URL(params.src);
 		const isAllowedOrigin = [
 			...ALLOWED_INTERNAL_ORIGINS,
-			...userInstances,
+			...getUserInstanceOrigins(settings),
 		].includes(parsedSrc.origin);
 
 		if (!isAllowedOrigin) {
@@ -217,4 +223,11 @@ function showNavigationQuestion(url, { buttons, onCancel, onAllow, logLabel }) {
 			console.log(`[INFO] [${logLabel}.navigation-question] Cancel`);
 			onCancel?.();
 	}
+}
+
+/**
+ * @param {import("./settings.js").Settings} settings
+ */
+function getUserInstanceOrigins(settings) {
+	return new Set(settings.instances.map(({ origin }) => origin));
 }
