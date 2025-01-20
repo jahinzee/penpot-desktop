@@ -1,6 +1,6 @@
 /**
  * @typedef {Parameters<typeof window.api.setTheme>[0]} ThemeId
- * @typedef {ThemeId | "tab"} ThemeSetting
+ * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"theme">>>} ThemeSetting
  * @typedef {import("electron").IpcMessageEvent} IpcMessageEvent
  */
 
@@ -8,7 +8,6 @@ import { SlSelect } from "../../../node_modules/@shoelace-style/shoelace/cdn/sho
 import { getIncludedElement } from "./dom.js";
 import { requestTabTheme } from "./electron-tabs.js";
 
-const THEME_STORE_KEY = "theme";
 export const THEME_TAB_EVENTS = Object.freeze({
 	REQUEST_UPDATE: "theme-request-update",
 	UPDATE: "theme-update",
@@ -21,15 +20,10 @@ const THEME_MEDIA = Object.freeze({
 /** @type {ThemeSetting | null} */
 let currentThemeSetting = null;
 
-export function initTheme() {
-	currentThemeSetting = /** @type {ThemeSetting | null} */ (
-		localStorage.getItem(THEME_STORE_KEY)
-	);
+export async function initTheme() {
+	currentThemeSetting = await window.api.getSetting("theme");
 
-	if (currentThemeSetting) {
-		setTheme(currentThemeSetting);
-	}
-
+	setTheme(currentThemeSetting);
 	prepareForm(currentThemeSetting);
 	syncThemeClass();
 }
@@ -80,7 +74,7 @@ async function prepareForm(themeSetting) {
 			const isTabTheme = value === "tab";
 
 			currentThemeSetting = value;
-			localStorage.setItem(THEME_STORE_KEY, value);
+			window.api.setSetting("theme", value);
 
 			if (isTabTheme) {
 				requestTabTheme();
@@ -88,9 +82,6 @@ async function prepareForm(themeSetting) {
 			}
 
 			setTheme(value);
-		} else {
-			currentThemeSetting = null;
-			localStorage.removeItem(THEME_STORE_KEY);
 		}
 	});
 }
