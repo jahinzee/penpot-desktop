@@ -6,6 +6,9 @@ permissions:
   # Required for Electron Builder to create and update releases on Github
   contents: write
 
+env:
+  DEPENDENCIES_BOT_NAME: "dependabot[bot]"
+
 jobs:
   build:
     strategy:
@@ -24,10 +27,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Validate commit messages - last push commit
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.event.pusher.name != env.DEPENDENCIES_BOT_NAME
         run: npx commitlint --last --verbose
       - name: Validate commit messages - PR's commits
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.user.login != env.DEPENDENCIES_BOT_NAME
         run: npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
       - name: Run code checks
         run: npm run check
