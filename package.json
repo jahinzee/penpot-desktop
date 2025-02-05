@@ -34,7 +34,7 @@
 		"check": "npm run format:check && npm run lint && tsc"
 	},
 	"dependencies": {
-		"@shoelace-style/shoelace": "^2.19.1",
+		"@shoelace-style/shoelace": "^2.20.0",
 		"electron-tabs": "^1.0.1",
 		"electron-updater": "^6.3.9",
 		"electron-window-state": "^5.0.3"
@@ -43,7 +43,7 @@
 		"@commitlint/cli": "^19.7.1",
 		"@commitlint/config-conventional": "^19.7.1",
 		"@eslint/js": "^9.19.0",
-		"electron": "^34.0.1",
+		"electron": "^34.0.2",
 		"electron-builder": "^25.1.8",
 		"eslint": "^9.19.0",
 		"globals": "^15.14.0",
