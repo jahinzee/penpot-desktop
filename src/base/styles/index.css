@@ -1,6 +1,7 @@
 @import url("./form.css");
 @import url("./controls.css");
 @import url("./settings.css");
+@import url("./menu.css");
 
 @media (prefers-color-scheme: light) {
 	:root {

@@ -9,6 +9,9 @@ import { readConfig, writeConfig } from "./config.js";
  *
  * @typedef {Object} Instance
  * @property {URL["origin"]} origin
+ * @property {string =} label
+ * @property {string =} color
+ * @property {boolean =} isDefault
  */
 
 const CONFIG_SETTINGS_NAME = "settings";

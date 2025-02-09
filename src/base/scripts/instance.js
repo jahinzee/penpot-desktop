@@ -12,11 +12,17 @@ const INSTANCE_EVENTS = Object.freeze({
 
 export async function initInstance() {
 	const instances = await window.api.getSetting("instances");
-	const { origin } = instances[0] || {};
 
-	await setDefaultTab(origin);
-	openTab(origin);
+	const { origin, color } =
+		instances.find(({ isDefault }) => isDefault) || instances[0] || {};
+
+	await setDefaultTab(origin, {
+		accentColor: color,
+	});
 	prepareForm(origin);
+	openTab(origin, {
+		accentColor: color,
+	});
 }
 
 /**

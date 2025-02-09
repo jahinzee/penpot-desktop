@@ -1,3 +1,4 @@
+import { hideContextMenu, showContextMenu } from "./contextMenu.js";
 import { getIncludedElement, typedQuerySelector } from "./dom.js";
 import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
 
@@ -5,6 +6,9 @@ import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
  * @typedef {import("electron-tabs").TabGroup} TabGroup
  * @typedef {import("electron-tabs").Tab} Tab
  * @typedef {import("electron").WebviewTag} WebviewTag
+ *
+ * @typedef {Object} TabOptions
+ * @property {string =} accentColor
  */
 
 const DEFAULT_INSTANCE = "https://design.penpot.app/";
@@ -33,6 +37,26 @@ export async function initTabs() {
 
 	window.api.onOpenTab(openTab);
 	window.api.onTabMenuAction(handleTabMenuAction);
+
+	const addTabButton = tabGroup?.shadow.querySelector(".buttons > button");
+	addTabButton?.addEventListener("contextmenu", async () => {
+		const instances = await window.api.getSetting("instances");
+		const hasMultipleInstances = instances.length > 1;
+
+		if (!hasMultipleInstances) {
+			return;
+		}
+
+		const menuItems = instances.map(({ origin, label, color }) => ({
+			label: label || origin,
+			onClick: () => {
+				openTab(origin, { accentColor: color });
+				hideContextMenu();
+			},
+		}));
+
+		showContextMenu(addTabButton, menuItems);
+	});
 }
 
 export async function resetTabs() {
@@ -43,20 +67,23 @@ export async function resetTabs() {
 
 /**
  * @param {string =} href
+ * @param {TabOptions} options
  */
-export async function setDefaultTab(href) {
+export async function setDefaultTab(href, { accentColor } = {}) {
 	const tabGroup = await getTabGroup();
 
 	tabGroup?.setDefaultTab({
 		...DEFAULT_TAB_OPTIONS,
 		...(href ? { src: href } : {}),
+		ready: (tab) => tabReadyHandler(tab, { accentColor }),
 	});
 }
 
 /**
  * @param {string =} href
+ * @param {TabOptions} options
  */
-export async function openTab(href) {
+export async function openTab(href, { accentColor } = {}) {
 	const tabGroup = await getTabGroup();
 
 	tabGroup?.addTab(
@@ -64,6 +91,9 @@ export async function openTab(href) {
 			? {
 					...DEFAULT_TAB_OPTIONS,
 					src: href,
+					ready: (tab) => {
+						tabReadyHandler(tab, { accentColor });
+					},
 				}
 			: undefined,
 	);
@@ -84,9 +114,14 @@ async function prepareTabReloadButton() {
 
 /**
  * @param {Tab} tab
+ * @param {TabOptions} options
  */
-function tabReadyHandler(tab) {
+function tabReadyHandler(tab, { accentColor } = {}) {
 	const webview = /** @type {WebviewTag} */ (tab.webview);
+
+	if (accentColor) {
+		tab.element.style.setProperty("--tab-accent-color", accentColor);
+	}
 
 	tab.once("webview-dom-ready", () => {
 		tab.on("active", () => requestTabTheme(tab));
