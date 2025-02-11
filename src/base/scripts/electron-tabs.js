@@ -59,12 +59,6 @@ export async function initTabs() {
 	});
 }
 
-export async function resetTabs() {
-	const tabGroup = await getTabGroup();
-	tabGroup?.eachTab((tab) => tab.close(false));
-	openTab();
-}
-
 /**
  * @param {string =} href
  * @param {TabOptions} options

@@ -1,9 +1,15 @@
-import { getIncludedElement } from "./dom.js";
-import { openTab, resetTabs, setDefaultTab } from "./electron-tabs.js";
+import { getIncludedElement, typedQuerySelector } from "./dom.js";
+import { openTab, setDefaultTab } from "./electron-tabs.js";
 import {
 	SlButton,
-	SlInput,
+	SlColorPicker,
 } from "../../../node_modules/@shoelace-style/shoelace/cdn/shoelace.js";
+import { isNonNull } from "../../tools/value.js";
+import { isParentNode } from "../../tools/element.js";
+
+/**
+ * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"instances">>>} Instances
+ */
 
 const INSTANCE_EVENTS = Object.freeze({
 	REGISTER: "registerInstance",
@@ -19,68 +25,98 @@ export async function initInstance() {
 	await setDefaultTab(origin, {
 		accentColor: color,
 	});
-	prepareForm(origin);
 	openTab(origin, {
 		accentColor: color,
 	});
+
+	fillInstanceList(instances);
 }
 
 /**
- * @param {string =} origin
+ * Fill instance list with instance items.
+ *
+ * @param {Instances} instances
  */
-async function prepareForm(origin) {
-	const { instanceForm, instanceField } = await getInstanceSettingsForm();
+async function fillInstanceList(instances) {
+	const { instanceList, instancePanelTemplate } =
+		await getInstanceSettingsElements();
 
-	instanceForm?.addEventListener("submit", (event) => {
-		event.preventDefault();
-		saveInstance();
-	});
-
-	if (instanceField && origin) {
-		instanceField.value = origin;
+	if (!instanceList || !instancePanelTemplate) {
+		return;
 	}
+
+	const instancePanels = instances
+		.map((instance) => createInstancePanel(instance, instancePanelTemplate))
+		.filter(isNonNull);
+
+	instanceList?.prepend(...instancePanels);
 }
 
-async function saveInstance() {
-	const { instanceField, instanceSaveButton } = await getInstanceSettingsForm();
-	const instance = instanceField?.value;
+/**
+ * Creates an instance panel element.
+ *
+ * @param {Instances[number]} instance
+ * @param {HTMLTemplateElement} template
+ */
+function createInstancePanel({ origin, label, color }, template) {
+	const instancePanel = document.importNode(template.content, true);
 
-	if (instance) {
-		window.api.send(INSTANCE_EVENTS.REGISTER, instance);
-		await setDefaultTab(instance);
-	} else {
-		window.api.send(INSTANCE_EVENTS.REMOVE);
-		await setDefaultTab();
+	if (!instancePanel || !isParentNode(instancePanel)) {
+		return;
 	}
 
-	resetTabs();
-
-	if (instanceSaveButton) {
-		instanceSaveButton.setAttribute("variant", "success");
-		instanceSaveButton.innerText = "Saved!";
-		setTimeout(() => {
-			instanceSaveButton.removeAttribute("variant");
-			instanceSaveButton.innerText = "Save";
-		}, 1200);
+	const colorPickerEl = typedQuerySelector(
+		"sl-color-picker",
+		SlColorPicker,
+		instancePanel,
+	);
+	if (colorPickerEl) {
+		colorPickerEl.value = color || "";
 	}
-}
 
-async function getInstanceSettingsForm() {
-	const instanceForm = await getIncludedElement(
-		"#instance-form",
-		"#include-settings",
-		HTMLFormElement,
+	const labelEl = typedQuerySelector(
+		".label",
+		HTMLParagraphElement,
+		instancePanel,
 	);
-	const instanceField = await getIncludedElement(
-		"#instance-field",
-		"#include-settings",
-		SlInput,
+	if (labelEl) {
+		labelEl.innerText = label || "";
+	}
+
+	const hintEl = typedQuerySelector(
+		".hint",
+		HTMLParagraphElement,
+		instancePanel,
 	);
-	const instanceSaveButton = await getIncludedElement(
-		"#instance-save",
-		"#include-settings",
+	if (hintEl) {
+		hintEl.innerText = origin;
+	}
+
+	const buttonDeleteEl = typedQuerySelector(
+		"sl-button",
 		SlButton,
+		instancePanel,
+	);
+	if (buttonDeleteEl) {
+		buttonDeleteEl.addEventListener("click", () => {
+			console.log(INSTANCE_EVENTS.REMOVE);
+		});
+	}
+
+	return instancePanel;
+}
+
+async function getInstanceSettingsElements() {
+	const instanceList = await getIncludedElement(
+		"#instance-list",
+		"#include-settings",
+		HTMLDivElement,
+	);
+	const instancePanelTemplate = await getIncludedElement(
+		"#template-instance-panel",
+		"#include-settings",
+		HTMLTemplateElement,
 	);
 
-	return { instanceForm, instanceField, instanceSaveButton };
+	return { instanceList, instancePanelTemplate };
 }

@@ -1,17 +1,8 @@
 <sl-drawer id="settings" class="settings" placement="start" label="Settings">
-	<div>
-		<form id="instance-form" class="inline">
-			<sl-input
-				id="instance-field"
-				label="Instance"
-				type="url"
-				placeholder="https://design.penpot.app/"
-				size="small"
-			></sl-input>
-			<sl-button id="instance-save" type="submit" size="small">Save</sl-button>
-		</form>
-
-		<sl-select id="theme-select" label="Theme" size="small">
+	<div class="titled-section">
+		<h3>Theme</h3>
+		<sl-select id="theme-select" size="small">
+			<sl-visually-hidden slot="label">Theme</sl-visually-hidden>
 			<sl-option value="light">Light</sl-option>
 			<sl-option value="dark">Dark</sl-option>
 			<sl-option value="system">System</sl-option>
@@ -19,8 +10,35 @@
 		</sl-select>
 	</div>
 
-	<sl-button-group class="footer" label="Help Center">
+	<div class="titled-section">
+		<h3>Instances</h3>
+		<div id="instance-list" class="panel-list">
+			<sl-button id="instance-add" variant="default" size="small">
+				<sl-icon
+					slot="prefix"
+					name="plus-square"
+					label="Add instance"
+				></sl-icon>
+				Add instance
+			</sl-button>
+		</div>
+	</div>
+
+	<sl-button-group slot="footer" label="Help Center">
 		<sl-button id="open-docs" href="#" size="small">Documentation</sl-button>
 		<sl-button id="open-selfhost" href="#" size="small">Selfhost</sl-button>
 	</sl-button-group>
 </sl-drawer>
+
+<template id="template-instance-panel">
+	<div class="panel">
+		<sl-color-picker size="small"></sl-color-picker>
+		<div class="body">
+			<p class="label"></p>
+			<p class="hint"></p>
+		</div>
+		<sl-button variant="default" size="small">
+			<sl-icon slot="prefix" name="trash" label="Delete"></sl-icon>
+		</sl-button>
+	</div>
+</template>
