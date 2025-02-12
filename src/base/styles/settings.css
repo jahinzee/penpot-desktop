@@ -25,8 +25,12 @@
 
 .panel-list {
 	display: grid;
-
 	row-gap: var(--sl-spacing-small);
+
+	.list {
+		display: grid;
+		row-gap: var(--sl-spacing-small);
+	}
 
 	> sl-button {
 		width: 100%;

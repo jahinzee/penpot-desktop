@@ -27,20 +27,19 @@ const ALLOWED_EXTERNAL_URLS = Object.freeze([
 ]);
 
 ipcMain.on("registerInstance", (event, instance) => {
-	try {
-		const { origin } = new URL(instance);
-		settings.instances = [{ origin }];
-	} catch (error) {
-		console.error(`[ERROR] [IPC.registerInstance] Failed with: ${instance}`);
+	const { origin } = instance;
+	const hasValidOrigin = URL.canParse(origin);
+	if (hasValidOrigin) {
+		settings.instances = [...settings.instances, instance];
+	} else {
+		console.warn(`[WARN] [IPC.registerInstance] Failed with: ${origin}`);
 	}
 });
 
-ipcMain.on("removeInstance", (event, instance) => {
-	try {
-		settings.instances = [];
-	} catch (error) {
-		console.error(`[ERROR] [IPC.removeInstance] Failed with: ${instance}`);
-	}
+ipcMain.on("removeInstance", (event, id) => {
+	settings.instances = settings.instances.filter(
+		({ id: registeredId }) => registeredId !== id,
+	);
 });
 
 app.on("web-contents-created", (event, contents) => {

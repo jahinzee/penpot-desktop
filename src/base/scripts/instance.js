@@ -11,6 +11,13 @@ import { isParentNode } from "../../tools/element.js";
  * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"instances">>>} Instances
  */
 
+export const DEFAULT_INSTANCE = Object.freeze({
+	id: crypto.randomUUID(),
+	origin: "https://design.penpot.app",
+	label: "Official",
+	color: "#48c393",
+	isDefault: false,
+});
 const INSTANCE_EVENTS = Object.freeze({
 	REGISTER: "registerInstance",
 	REMOVE: "removeInstance",
@@ -20,7 +27,9 @@ export async function initInstance() {
 	const instances = await window.api.getSetting("instances");
 
 	const { origin, color } =
-		instances.find(({ isDefault }) => isDefault) || instances[0] || {};
+		instances.find(({ isDefault }) => isDefault) ||
+		instances[0] ||
+		DEFAULT_INSTANCE;
 
 	await setDefaultTab(origin, {
 		accentColor: color,
@@ -29,15 +38,25 @@ export async function initInstance() {
 		accentColor: color,
 	});
 
-	fillInstanceList(instances);
+	updateInstanceList();
+	prepareInstanceControls();
+}
+
+async function prepareInstanceControls() {
+	const { instanceButtonAdd } = await getInstanceSettingsElements();
+
+	instanceButtonAdd?.addEventListener("click", addInstance);
+}
+
+function addInstance() {
+	window.api.send("registerInstance", DEFAULT_INSTANCE);
+	updateInstanceList();
 }
 
 /**
  * Fill instance list with instance items.
- *
- * @param {Instances} instances
  */
-async function fillInstanceList(instances) {
+async function updateInstanceList() {
 	const { instanceList, instancePanelTemplate } =
 		await getInstanceSettingsElements();
 
@@ -45,11 +64,12 @@ async function fillInstanceList(instances) {
 		return;
 	}
 
+	const instances = await window.api.getSetting("instances");
 	const instancePanels = instances
 		.map((instance) => createInstancePanel(instance, instancePanelTemplate))
 		.filter(isNonNull);
 
-	instanceList?.prepend(...instancePanels);
+	instanceList?.replaceChildren(...instancePanels);
 }
 
 /**
@@ -58,7 +78,7 @@ async function fillInstanceList(instances) {
  * @param {Instances[number]} instance
  * @param {HTMLTemplateElement} template
  */
-function createInstancePanel({ origin, label, color }, template) {
+function createInstancePanel({ id, origin, label, color }, template) {
 	const instancePanel = document.importNode(template.content, true);
 
 	if (!instancePanel || !isParentNode(instancePanel)) {
@@ -99,7 +119,8 @@ function createInstancePanel({ origin, label, color }, template) {
 	);
 	if (buttonDeleteEl) {
 		buttonDeleteEl.addEventListener("click", () => {
-			console.log(INSTANCE_EVENTS.REMOVE);
+			window.api.send(INSTANCE_EVENTS.REMOVE, id);
+			updateInstanceList();
 		});
 	}
 
@@ -117,6 +138,11 @@ async function getInstanceSettingsElements() {
 		"#include-settings",
 		HTMLTemplateElement,
 	);
+	const instanceButtonAdd = await getIncludedElement(
+		"#instance-add",
+		"#include-settings",
+		SlButton,
+	);
 
-	return { instanceList, instancePanelTemplate };
+	return { instanceList, instancePanelTemplate, instanceButtonAdd };
 }

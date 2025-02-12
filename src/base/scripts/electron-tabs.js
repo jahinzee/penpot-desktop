@@ -1,5 +1,6 @@
 import { hideContextMenu, showContextMenu } from "./contextMenu.js";
 import { getIncludedElement, typedQuerySelector } from "./dom.js";
+import { DEFAULT_INSTANCE } from "./instance.js";
 import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
 
 /**
@@ -11,10 +12,9 @@ import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
  * @property {string =} accentColor
  */
 
-const DEFAULT_INSTANCE = "https://design.penpot.app/";
 const PRELOAD_PATH = "./scripts/webviews/preload.mjs";
 const DEFAULT_TAB_OPTIONS = Object.freeze({
-	src: DEFAULT_INSTANCE,
+	src: DEFAULT_INSTANCE.origin,
 	active: true,
 	webviewAttributes: {
 		preload: PRELOAD_PATH,

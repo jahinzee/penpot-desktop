@@ -8,6 +8,7 @@ import { readConfig, writeConfig } from "./config.js";
  * @property {Array<Instance>} instances
  *
  * @typedef {Object} Instance
+ * @property {string =} id
  * @property {URL["origin"]} origin
  * @property {string =} label
  * @property {string =} color
