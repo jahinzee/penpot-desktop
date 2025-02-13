@@ -6,16 +6,16 @@ import {
 } from "../../../node_modules/@shoelace-style/shoelace/cdn/shoelace.js";
 import { isNonNull } from "../../tools/value.js";
 import { isParentNode } from "../../tools/element.js";
+import { EditableText } from "../components/editableText.js";
 
 /**
  * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"instances">>>} Instances
  */
 
 export const DEFAULT_INSTANCE = Object.freeze({
-	id: crypto.randomUUID(),
 	origin: "https://design.penpot.app",
 	label: "Official",
-	color: "#48c393",
+	color: "hsla(0,0,0,0)",
 	isDefault: false,
 });
 const INSTANCE_EVENTS = Object.freeze({
@@ -49,7 +49,9 @@ async function prepareInstanceControls() {
 }
 
 function addInstance() {
-	window.api.send("registerInstance", DEFAULT_INSTANCE);
+	registerInstance({
+		id: crypto.randomUUID(),
+	});
 	updateInstanceList();
 }
 
@@ -78,7 +80,8 @@ async function updateInstanceList() {
  * @param {Instances[number]} instance
  * @param {HTMLTemplateElement} template
  */
-function createInstancePanel({ id, origin, label, color }, template) {
+function createInstancePanel(instance, template) {
+	const { id, origin, label, color } = { ...instance };
 	const instancePanel = document.importNode(template.content, true);
 
 	if (!instancePanel || !isParentNode(instancePanel)) {
@@ -92,24 +95,37 @@ function createInstancePanel({ id, origin, label, color }, template) {
 	);
 	if (colorPickerEl) {
 		colorPickerEl.value = color || "";
+		colorPickerEl.addEventListener("sl-blur", () => {
+			instance.color = colorPickerEl.getFormattedValue("hsla");
+
+			registerInstance(instance);
+		});
 	}
 
-	const labelEl = typedQuerySelector(
-		".label",
-		HTMLParagraphElement,
-		instancePanel,
-	);
+	const labelEl = typedQuerySelector(".label", EditableText, instancePanel);
 	if (labelEl) {
 		labelEl.innerText = label || "";
+		labelEl.addEventListener(
+			"change",
+			(/**@type {CustomEventInit} */ { detail: { value } }) => {
+				instance.label = value;
+
+				registerInstance(instance);
+			},
+		);
 	}
 
-	const hintEl = typedQuerySelector(
-		".hint",
-		HTMLParagraphElement,
-		instancePanel,
-	);
+	const hintEl = typedQuerySelector(".hint", EditableText, instancePanel);
 	if (hintEl) {
 		hintEl.innerText = origin;
+		hintEl.addEventListener(
+			"change",
+			(/**@type {CustomEventInit} */ { detail: { value } }) => {
+				instance.origin = value;
+
+				registerInstance(instance);
+			},
+		);
 	}
 
 	const buttonDeleteEl = typedQuerySelector(
@@ -145,4 +161,22 @@ async function getInstanceSettingsElements() {
 	);
 
 	return { instanceList, instancePanelTemplate, instanceButtonAdd };
+}
+
+/**
+ * @param {Partial<Instances[number]>} instance
+ */
+function registerInstance(instance) {
+	const { origin, color, isDefault } = instance;
+
+	window.api.send("registerInstance", {
+		...DEFAULT_INSTANCE,
+		...instance,
+	});
+
+	if (isDefault) {
+		setDefaultTab(origin, {
+			accentColor: color,
+		});
+	}
 }

@@ -33,10 +33,18 @@
 
 <template id="template-instance-panel">
 	<div class="panel">
-		<sl-color-picker size="small"></sl-color-picker>
+		<sl-color-picker size="small" format="hsl" opacity="true"></sl-color-picker>
 		<div class="body">
-			<p class="label"></p>
-			<p class="hint"></p>
+			<editable-text
+				class="label"
+				label="Label"
+				placeholder="My instance"
+			></editable-text>
+			<editable-text
+				class="hint"
+				label="Origin"
+				placeholder="https://my-penpot.example.com"
+			></editable-text>
 		</div>
 		<sl-button variant="default" size="small">
 			<sl-icon slot="prefix" name="trash" label="Delete"></sl-icon>
