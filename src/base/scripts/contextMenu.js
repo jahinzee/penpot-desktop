@@ -3,6 +3,7 @@ import {
 	SlMenuItem,
 } from "../../../node_modules/@shoelace-style/shoelace/cdn/shoelace.js";
 import { typedQuerySelector } from "./dom.js";
+import { trapFocus } from "./ui.js";
 
 /**
  * @typedef {Object} MenuItem
@@ -12,11 +13,13 @@ import { typedQuerySelector } from "./dom.js";
 
 /** @type {ResizeObserver | null} */
 let resizeObserver;
+/** @type {HTMLElement | null} */
+let currentHost;
 
 /**
  * Opens a context menu with given items, positioned "relatively" to a host element.
  *
- * @param {Element} host
+ * @param {HTMLElement} host
  * @param {MenuItem[]} items
  */
 export function showContextMenu(host, items) {
@@ -25,8 +28,18 @@ export function showContextMenu(host, items) {
 		return;
 	}
 
+	currentHost = host;
+
 	const menuItems = items.map(createContextMenuItem);
 	menu.replaceChildren(...menuItems);
+
+	trapFocus(menuItems);
+
+	// When inserting elements browser(s) set tabindex of the last element to -1, to prevent it from catching focus. It has to be manually reset.
+	setTimeout(() => {
+		menuItems.forEach((element) => (element.tabIndex = 0));
+		menuItems[0].focus();
+	});
 
 	// By default the menu has display set to `none`.
 	// Position calculation has to be delayed until the menu is part of the DOM. Otherwise the menu's size and position are reported as 0.
@@ -44,7 +57,21 @@ export function showContextMenu(host, items) {
 	resizeObserver.observe(menu);
 
 	contextMenu.addEventListener("click", hideContextMenu);
+	contextMenu.addEventListener("keydown", hideWithKeyboard);
 	contextMenu.classList.add("visible");
+}
+
+/**
+ * @param {KeyboardEvent} event
+ */
+function hideWithKeyboard(event) {
+	const { key } = event;
+	const isEscape = key === "Escape";
+
+	if (isEscape) {
+		event.preventDefault();
+		hideContextMenu();
+	}
 }
 
 export function hideContextMenu() {
@@ -55,7 +82,13 @@ export function hideContextMenu() {
 
 	contextMenu?.classList.remove("visible");
 	contextMenu.removeEventListener("click", hideContextMenu);
+	contextMenu.removeEventListener("keydown", hideWithKeyboard);
 	resizeObserver?.unobserve(menu);
+
+	if (currentHost) {
+		currentHost.focus();
+		currentHost = null;
+	}
 }
 
 /**

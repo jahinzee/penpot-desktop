@@ -38,7 +38,11 @@ export async function initTabs() {
 	window.api.onOpenTab(openTab);
 	window.api.onTabMenuAction(handleTabMenuAction);
 
-	const addTabButton = tabGroup?.shadow.querySelector(".buttons > button");
+	const addTabButton = typedQuerySelector(
+		".buttons > button",
+		HTMLButtonElement,
+		tabGroup?.shadow,
+	);
 	addTabButton?.addEventListener("contextmenu", async () => {
 		const instances = await window.api.getSetting("instances");
 		const hasMultipleInstances = instances.length > 1;
