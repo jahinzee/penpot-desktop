@@ -1,5 +1,5 @@
 import { app } from "electron";
-import { readFile, writeFile } from "node:fs/promises";
+import { copyFile, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 /**
@@ -18,9 +18,15 @@ export async function readConfig(configName) {
 
 		return config;
 	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Failed to get the config.";
-		console.error(`[ERROR] [config:read:${configName}] ${message}`);
+		const isError = error instanceof Error;
+		const isNoFile = isError && "code" in error && error.code === "ENOENT";
+		const message = `[ERROR] [config:read:${configName}] ${isError ? error.message : "Failed to read config."}`;
+
+		if (isError && !isNoFile) {
+			throw new Error(message);
+		}
+
+		console.error(message);
 	}
 }
 
@@ -37,9 +43,29 @@ export function writeConfig(configName, config) {
 		const configJSON = JSON.stringify(config, null, "\t");
 		writeFile(configFilePath, configJSON, "utf8");
 	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Failed to save the  config.";
+		const isError = error instanceof Error;
+		const message = isError ? error.message : "Failed to save the  config.";
 		console.error(`[ERROR] [config:write:${configName}] ${message}`);
+	}
+}
+
+/**
+ * @param {string} configName
+ * @param {string =} suffix
+ */
+export function duplicateConfig(configName, suffix) {
+	const configFilePath = getConfigFilePath(configName);
+	const modifier = suffix ? `.${suffix}` : "";
+	const configFileCopyPath = getConfigFilePath(`${configName}${modifier}`);
+
+	try {
+		copyFile(configFilePath, configFileCopyPath);
+	} catch (error) {
+		const isError = error instanceof Error;
+		const message = isError
+			? error.message
+			: "Failed to duplicate the  config.";
+		console.error(`[ERROR] [config:duplicate:${configName}] ${message}`);
 	}
 }
 

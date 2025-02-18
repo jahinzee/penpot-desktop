@@ -7,17 +7,12 @@ import {
 import { isNonNull } from "../../tools/value.js";
 import { isParentNode } from "../../tools/element.js";
 import { EditableText } from "../components/editableText.js";
+import { DEFAULT_INSTANCE } from "../../shared/instance.js";
 
 /**
  * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"instances">>>} Instances
  */
 
-export const DEFAULT_INSTANCE = Object.freeze({
-	origin: "https://design.penpot.app",
-	label: "Official",
-	color: "hsla(0,0,0,0)",
-	isDefault: false,
-});
 const INSTANCE_EVENTS = Object.freeze({
 	REGISTER: "registerInstance",
 	REMOVE: "removeInstance",
@@ -27,9 +22,7 @@ export async function initInstance() {
 	const instances = await window.api.getSetting("instances");
 
 	const { origin, color } =
-		instances.find(({ isDefault }) => isDefault) ||
-		instances[0] ||
-		DEFAULT_INSTANCE;
+		instances.find(({ isDefault }) => isDefault) || instances[0];
 
 	await setDefaultTab(origin, {
 		accentColor: color,

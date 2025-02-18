@@ -5,13 +5,8 @@ import { toMultiline } from "./string.js";
 import { getMainWindow } from "./window.js";
 import { settings } from "./settings.js";
 
-// Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
-const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
-	"https://design.penpot.app",
-	"https://early.penpot.dev",
-]);
+// Covered origins and URLs are scoped to the Penpot web app (e.g. links in the Menu > Help & info).
 const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
-	...OFFICIAL_INSTANCE_ORIGINS,
 	"https://penpot.app",
 	"https://help.penpot.app",
 ]);
@@ -144,10 +139,7 @@ app.on("web-contents-created", (event, contents) => {
 			console.log("Clear non-instance origins data.");
 
 			contents.session.clearData({
-				excludeOrigins: [
-					...OFFICIAL_INSTANCE_ORIGINS,
-					...getUserInstanceOrigins(settings),
-				],
+				excludeOrigins: [...getUserInstanceOrigins(settings)],
 			});
 		}
 	});
