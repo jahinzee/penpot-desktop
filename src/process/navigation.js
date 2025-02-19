@@ -47,6 +47,10 @@ ipcMain.on(INSTANCE_EVENTS.REGISTER, (event, instance) => {
 });
 
 ipcMain.on(INSTANCE_EVENTS.REMOVE, (event, id) => {
+	const userDataPath = app.getPath("sessionData");
+	const partitionPath = join(userDataPath, "Partitions", id);
+
+	shell.trashItem(partitionPath);
 	settings.instances = settings.instances.filter(
 		({ id: registeredId }) => registeredId !== id,
 	);

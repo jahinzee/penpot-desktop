@@ -10,6 +10,7 @@ import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
  *
  * @typedef {Object} TabOptions
  * @property {string =} accentColor
+ * @property {string =} partition
  */
 
 const PRELOAD_PATH = "./scripts/webviews/preload.mjs";
@@ -51,10 +52,10 @@ export async function initTabs() {
 			return;
 		}
 
-		const menuItems = instances.map(({ origin, label, color }) => ({
+		const menuItems = instances.map(({ id, origin, label, color }) => ({
 			label: label || origin,
 			onClick: () => {
-				openTab(origin, { accentColor: color });
+				openTab(origin, { accentColor: color, partition: id });
 				hideContextMenu();
 			},
 		}));
@@ -67,12 +68,16 @@ export async function initTabs() {
  * @param {string =} href
  * @param {TabOptions} options
  */
-export async function setDefaultTab(href, { accentColor } = {}) {
+export async function setDefaultTab(href, { accentColor, partition } = {}) {
 	const tabGroup = await getTabGroup();
 
 	tabGroup?.setDefaultTab({
 		...DEFAULT_TAB_OPTIONS,
 		...(href ? { src: href } : {}),
+		webviewAttributes: {
+			...DEFAULT_TAB_OPTIONS.webviewAttributes,
+			...(partition && { partition: `persist:${partition}` }),
+		},
 		ready: (tab) => tabReadyHandler(tab, { accentColor }),
 	});
 }
@@ -81,7 +86,7 @@ export async function setDefaultTab(href, { accentColor } = {}) {
  * @param {string =} href
  * @param {TabOptions} options
  */
-export async function openTab(href, { accentColor } = {}) {
+export async function openTab(href, { accentColor, partition } = {}) {
 	const tabGroup = await getTabGroup();
 
 	tabGroup?.addTab(
@@ -89,6 +94,10 @@ export async function openTab(href, { accentColor } = {}) {
 			? {
 					...DEFAULT_TAB_OPTIONS,
 					src: href,
+					webviewAttributes: {
+						...DEFAULT_TAB_OPTIONS.webviewAttributes,
+						...(partition && { partition: `persist:${partition}` }),
+					},
 					ready: (tab) => {
 						tabReadyHandler(tab, { accentColor });
 					},

@@ -21,7 +21,7 @@ import {
 export async function initInstance() {
 	const instances = await window.api.getSetting("instances");
 
-	const { origin, color } =
+	const { id, origin, color } =
 		instances.find(({ isDefault }) => isDefault) || instances[0];
 
 	await setDefaultTab(origin, {
@@ -29,6 +29,7 @@ export async function initInstance() {
 	});
 	openTab(origin, {
 		accentColor: color,
+		partition: id,
 	});
 
 	updateInstanceList();
@@ -145,6 +146,7 @@ function createInstancePanel(instance, template) {
 					onClick: () => {
 						setDefaultTab(origin, {
 							accentColor: color,
+							partition: id,
 						});
 						window.api.send(INSTANCE_EVENTS.SET_DEFAULT, id);
 						hideContextMenu();
