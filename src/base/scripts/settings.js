@@ -16,11 +16,7 @@ export async function initSettings() {
 }
 
 async function toggleSettings() {
-	const settingsDrawer = await getIncludedElement(
-		"#settings",
-		"#include-settings",
-		SlDrawer,
-	);
+	const { settingsDrawer } = await getSettingsElements();
 
 	if (settingsDrawer?.open) {
 		settingsDrawer?.hide();
@@ -28,6 +24,18 @@ async function toggleSettings() {
 	}
 
 	settingsDrawer?.show();
+}
+
+export async function disableSettingsFocusTrap() {
+	const { settingsDrawer } = await getSettingsElements();
+
+	settingsDrawer?.modal.activateExternal();
+}
+
+export async function enableSettingsFocusTrap() {
+	const { settingsDrawer } = await getSettingsElements();
+
+	settingsDrawer?.modal.deactivateExternal();
 }
 
 async function getTriggers() {
@@ -48,4 +56,14 @@ async function getTriggers() {
 	);
 
 	return { toggleSettingsButton, openDocsButton, openSelfhostButton };
+}
+
+async function getSettingsElements() {
+	const settingsDrawer = await getIncludedElement(
+		"#settings",
+		"#include-settings",
+		SlDrawer,
+	);
+
+	return { settingsDrawer };
 }

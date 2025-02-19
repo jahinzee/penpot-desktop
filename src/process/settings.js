@@ -105,6 +105,11 @@ async function getUserSettings() {
 		});
 	}
 
+	const hasOneInstance = settings.instances.length === 1;
+	if (hasOneInstance) {
+		settings.instances[0].isDefault = true;
+	}
+
 	return settings;
 }
 

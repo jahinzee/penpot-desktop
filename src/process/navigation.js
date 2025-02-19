@@ -4,6 +4,7 @@ import { join } from "path";
 import { toMultiline } from "./string.js";
 import { getMainWindow } from "./window.js";
 import { settings } from "./settings.js";
+import { INSTANCE_EVENTS } from "../shared/instance.js";
 
 // Covered origins and URLs are scoped to the Penpot web app (e.g. links in the Menu > Help & info).
 const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
@@ -21,7 +22,7 @@ const ALLOWED_EXTERNAL_URLS = Object.freeze([
 	"https://github.com/penpot/penpot",
 ]);
 
-ipcMain.on("registerInstance", (event, instance) => {
+ipcMain.on(INSTANCE_EVENTS.REGISTER, (event, instance) => {
 	const { id, origin } = instance;
 	const hasValidOrigin = URL.canParse(origin);
 	if (hasValidOrigin) {
@@ -39,14 +40,23 @@ ipcMain.on("registerInstance", (event, instance) => {
 
 		settings.instances = [...settings.instances, instance];
 	} else {
-		console.warn(`[WARN] [IPC.registerInstance] Failed with: ${origin}`);
+		console.warn(
+			`[WARN] [IPC.${INSTANCE_EVENTS.REGISTER}] Failed with: ${origin}`,
+		);
 	}
 });
 
-ipcMain.on("removeInstance", (event, id) => {
+ipcMain.on(INSTANCE_EVENTS.REMOVE, (event, id) => {
 	settings.instances = settings.instances.filter(
 		({ id: registeredId }) => registeredId !== id,
 	);
+});
+
+ipcMain.on(INSTANCE_EVENTS.SET_DEFAULT, (event, id) => {
+	settings.instances = settings.instances.map((instance) => {
+		instance.isDefault = instance.id === id ? true : false;
+		return instance;
+	});
 });
 
 app.on("web-contents-created", (event, contents) => {

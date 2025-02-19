@@ -7,16 +7,16 @@ import {
 import { isNonNull } from "../../tools/value.js";
 import { isParentNode } from "../../tools/element.js";
 import { EditableText } from "../components/editableText.js";
-import { DEFAULT_INSTANCE } from "../../shared/instance.js";
+import { DEFAULT_INSTANCE, INSTANCE_EVENTS } from "../../shared/instance.js";
+import { hideContextMenu, showContextMenu } from "./contextMenu.js";
+import {
+	disableSettingsFocusTrap,
+	enableSettingsFocusTrap,
+} from "./settings.js";
 
 /**
  * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"instances">>>} Instances
  */
-
-const INSTANCE_EVENTS = Object.freeze({
-	REGISTER: "registerInstance",
-	REMOVE: "removeInstance",
-});
 
 export async function initInstance() {
 	const instances = await window.api.getSetting("instances");
@@ -74,7 +74,7 @@ async function updateInstanceList() {
  * @param {HTMLTemplateElement} template
  */
 function createInstancePanel(instance, template) {
-	const { id, origin, label, color } = { ...instance };
+	const { id, origin, label, color, isDefault } = { ...instance };
 	const instancePanel = document.importNode(template.content, true);
 
 	if (!instancePanel || !isParentNode(instancePanel)) {
@@ -127,9 +127,32 @@ function createInstancePanel(instance, template) {
 		instancePanel,
 	);
 	if (buttonDeleteEl) {
+		buttonDeleteEl.disabled = isDefault;
 		buttonDeleteEl.addEventListener("click", () => {
 			window.api.send(INSTANCE_EVENTS.REMOVE, id);
 			updateInstanceList();
+		});
+	}
+
+	const panelElement = typedQuerySelector(".panel", HTMLElement, instancePanel);
+	if (panelElement) {
+		panelElement.addEventListener("contextmenu", async () => {
+			await disableSettingsFocusTrap();
+
+			showContextMenu(panelElement, [
+				{
+					label: "Set as default",
+					onClick: () => {
+						setDefaultTab(origin, {
+							accentColor: color,
+						});
+						window.api.send(INSTANCE_EVENTS.SET_DEFAULT, id);
+						hideContextMenu();
+						updateInstanceList();
+						enableSettingsFocusTrap();
+					},
+				},
+			]);
 		});
 	}
 
@@ -162,7 +185,7 @@ async function getInstanceSettingsElements() {
 function registerInstance(instance) {
 	const { origin, color, isDefault } = instance;
 
-	window.api.send("registerInstance", {
+	window.api.send(INSTANCE_EVENTS.REGISTER, {
 		...DEFAULT_INSTANCE,
 		...instance,
 	});
