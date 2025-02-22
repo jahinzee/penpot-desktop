@@ -20,6 +20,8 @@ const TITLEBAR_OVERLAY = deepFreeze({
 	},
 });
 
+const USE_SYSTEM_TITLE_BAR = "USE_SYSTEM_TITLE_BAR" in process.env;
+
 /** @type {import("electron").BrowserWindow} */
 let mainWindow;
 
@@ -45,12 +47,13 @@ export const MainWindow = {
 			transparent: global.transparent,
 			vibrancy: "sidebar",
 			// Titlebar
-			titleBarStyle: "hidden",
+			titleBarStyle: USE_SYSTEM_TITLE_BAR ? "default" : "hidden",
+			// titleBarStyle: "default",
 			trafficLightPosition: { x: 16, y: 12 }, // for macOS
 			titleBarOverlay: TITLEBAR_OVERLAY.BASE,
 			// Other Options
 			autoHideMenuBar: true,
-			frame: false,
+			frame: USE_SYSTEM_TITLE_BAR,
 			icon: global.AppIcon,
 			webPreferences: {
 				preload: path.join(app.getAppPath(), "src/process/preload.mjs"),
@@ -89,13 +92,14 @@ export const MainWindow = {
 		});
 		ipcMain.on("set-theme", (_event, themeId) => {
 			nativeTheme.themeSource = themeId;
-
-			mainWindow.setTitleBarOverlay?.({
-				...TITLEBAR_OVERLAY.BASE,
-				...(nativeTheme.shouldUseDarkColors
-					? TITLEBAR_OVERLAY.DARK
-					: TITLEBAR_OVERLAY.LIGHT),
-			});
+			if (!USE_SYSTEM_TITLE_BAR) {
+				mainWindow.setTitleBarOverlay?.({
+					...TITLEBAR_OVERLAY.BASE,
+					...(nativeTheme.shouldUseDarkColors
+						? TITLEBAR_OVERLAY.DARK
+						: TITLEBAR_OVERLAY.LIGHT),
+				});
+			}
 		});
 
 		if (process.platform === "darwin") {
