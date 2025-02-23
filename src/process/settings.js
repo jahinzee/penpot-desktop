@@ -1,36 +1,42 @@
-import { ipcMain } from "electron";
-import { deepFreeze, observe } from "../tools/object.js";
-import { readConfig, writeConfig } from "./config.js";
-
-/**
- * @typedef {Object} Settings
- * @property {'light' | 'dark' | 'system' | 'tab'} theme
- * @property {Array<Instance>} instances
- *
- * @typedef {Object} Instance
- * @property {URL["origin"]} origin
- */
+import { app, dialog, ipcMain, shell } from "electron";
+import { observe } from "../tools/object.js";
+import { duplicateConfig, readConfig, writeConfig } from "./config.js";
+import { z, ZodError } from "zod";
+import { DEFAULT_INSTANCE } from "../shared/instance.js";
+import { getMainWindow } from "./window.js";
 
 const CONFIG_SETTINGS_NAME = "settings";
-/** @type {Settings} */
-const CONFIG_SETTINGS_DEFAULT = deepFreeze({
-	theme: "system",
-	instances: [],
-});
-const CONFIG_SETTINGS_ENTRY_NAMES = Object.freeze(
-	Object.keys(CONFIG_SETTINGS_DEFAULT),
-);
+const CONFIG_SETTINGS_ENTRY_NAMES = Object.freeze(["theme", "instances"]);
 
-/** @type {Settings} */
-export const settings = observe(
-	{
-		...CONFIG_SETTINGS_DEFAULT,
-		...(await readConfig(CONFIG_SETTINGS_NAME)),
-	},
-	(newSettings) => {
-		writeConfig(CONFIG_SETTINGS_NAME, newSettings);
-	},
-);
+const settingsSchema = z.object({
+	theme: z.enum(["light", "dark", "system", "tab"]).default("system"),
+	instances: z
+		.array(
+			z
+				.object({
+					id: z
+						.string()
+						.uuid()
+						.default(() => crypto.randomUUID()),
+					origin: z.string().url().default(DEFAULT_INSTANCE.origin),
+					label: z.string().default("Your instance"),
+					color: z.string().default(DEFAULT_INSTANCE.color),
+					isDefault: z.boolean().default(false),
+				})
+				.default({}),
+		)
+		.default([]),
+});
+
+/**
+ * @typedef {z.infer<typeof settingsSchema>} Settings
+ */
+const userSettings = await getUserSettings();
+writeConfig(CONFIG_SETTINGS_NAME, userSettings);
+
+export const settings = observe(userSettings, (newSettings) => {
+	writeConfig(CONFIG_SETTINGS_NAME, newSettings);
+});
 
 ipcMain.handle(
 	"setting:get",
@@ -70,3 +76,78 @@ ipcMain.on(
 		}
 	},
 );
+
+async function getUserSettings() {
+	let settings;
+
+	try {
+		/** @type {Settings | Record<string, unknown>} */
+		const userSettings = (await readConfig(CONFIG_SETTINGS_NAME)) || {};
+
+		settings = settingsSchema.parse(userSettings);
+	} catch (error) {
+		settings = settingsSchema.parse({});
+
+		if (error instanceof Error) {
+			duplicateConfig(CONFIG_SETTINGS_NAME, "old");
+
+			app.whenReady().then(() => {
+				showSettingsValidationIssue(error);
+			});
+		}
+	}
+
+	const hasInstances = !!settings.instances[0];
+	if (!hasInstances) {
+		settings.instances.push({
+			...DEFAULT_INSTANCE,
+			id: crypto.randomUUID(),
+		});
+	}
+
+	const hasOneInstance = settings.instances.length === 1;
+	if (hasOneInstance) {
+		settings.instances[0].isDefault = true;
+	}
+
+	return settings;
+}
+
+/**
+ * @param {Error} error
+ */
+function showSettingsValidationIssue(error) {
+	const mainWindow = getMainWindow();
+
+	const isZodError = error instanceof ZodError;
+	const errorDetails =
+		(isZodError &&
+			error.issues
+				.map(({ path, message }) => {
+					const dataInfo = path.join("/");
+
+					return `${dataInfo}: ${message}`;
+				})
+				.join("\n")) ||
+		error.message;
+
+	const DIALOG_DECISIONS = Object.freeze({
+		CONFIRM: 0,
+		REPORT: 1,
+	});
+	const decision = dialog.showMessageBoxSync(mainWindow, {
+		type: "error",
+		title: "Settings Error",
+		message: `The app encountered an issue with your settings.`,
+		detail: `The settings file contains invalid data and was backed up to "settings.old.json". The app will use the default settings.\n\nReported errors:\n${errorDetails}\n\n If you didn't manually edit the settings file, please report this issue.`,
+		buttons: ["OK", "Report"],
+		defaultId: DIALOG_DECISIONS.CONFIRM,
+		cancelId: DIALOG_DECISIONS.CONFIRM,
+	});
+
+	const isReport = decision === DIALOG_DECISIONS.REPORT;
+	if (isReport) {
+		shell.openExternal("https://github.com/author-more/penpot-desktop/issues");
+		return;
+	}
+}

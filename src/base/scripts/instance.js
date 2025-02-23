@@ -1,80 +1,200 @@
-import { getIncludedElement } from "./dom.js";
-import { openTab, resetTabs, setDefaultTab } from "./electron-tabs.js";
+import { getIncludedElement, typedQuerySelector } from "./dom.js";
+import { openTab, setDefaultTab } from "./electron-tabs.js";
 import {
 	SlButton,
-	SlInput,
+	SlColorPicker,
 } from "../../../node_modules/@shoelace-style/shoelace/cdn/shoelace.js";
+import { isNonNull } from "../../tools/value.js";
+import { isParentNode } from "../../tools/element.js";
+import { EditableText } from "../components/editableText.js";
+import { DEFAULT_INSTANCE, INSTANCE_EVENTS } from "../../shared/instance.js";
+import { hideContextMenu, showContextMenu } from "./contextMenu.js";
+import {
+	disableSettingsFocusTrap,
+	enableSettingsFocusTrap,
+} from "./settings.js";
 
-const INSTANCE_EVENTS = Object.freeze({
-	REGISTER: "registerInstance",
-	REMOVE: "removeInstance",
-});
+/**
+ * @typedef {Awaited<ReturnType<typeof window.api.getSetting<"instances">>>} Instances
+ */
 
 export async function initInstance() {
 	const instances = await window.api.getSetting("instances");
-	const { origin } = instances[0] || {};
 
-	await setDefaultTab(origin);
-	openTab(origin);
-	prepareForm(origin);
+	const { id, origin, color } =
+		instances.find(({ isDefault }) => isDefault) || instances[0];
+
+	await setDefaultTab(origin, {
+		accentColor: color,
+	});
+	openTab(origin, {
+		accentColor: color,
+		partition: id,
+	});
+
+	updateInstanceList();
+	prepareInstanceControls();
+}
+
+async function prepareInstanceControls() {
+	const { instanceButtonAdd } = await getInstanceSettingsElements();
+
+	instanceButtonAdd?.addEventListener("click", addInstance);
+}
+
+function addInstance() {
+	registerInstance({
+		id: crypto.randomUUID(),
+	});
+	updateInstanceList();
 }
 
 /**
- * @param {string =} origin
+ * Fill instance list with instance items.
  */
-async function prepareForm(origin) {
-	const { instanceForm, instanceField } = await getInstanceSettingsForm();
+async function updateInstanceList() {
+	const { instanceList, instancePanelTemplate } =
+		await getInstanceSettingsElements();
 
-	instanceForm?.addEventListener("submit", (event) => {
-		event.preventDefault();
-		saveInstance();
-	});
-
-	if (instanceField && origin) {
-		instanceField.value = origin;
+	if (!instanceList || !instancePanelTemplate) {
+		return;
 	}
+
+	const instances = await window.api.getSetting("instances");
+	const instancePanels = instances
+		.map((instance) => createInstancePanel(instance, instancePanelTemplate))
+		.filter(isNonNull);
+
+	instanceList?.replaceChildren(...instancePanels);
 }
 
-async function saveInstance() {
-	const { instanceField, instanceSaveButton } = await getInstanceSettingsForm();
-	const instance = instanceField?.value;
+/**
+ * Creates an instance panel element.
+ *
+ * @param {Instances[number]} instance
+ * @param {HTMLTemplateElement} template
+ */
+function createInstancePanel(instance, template) {
+	const { id, origin, label, color, isDefault } = { ...instance };
+	const instancePanel = document.importNode(template.content, true);
 
-	if (instance) {
-		window.api.send(INSTANCE_EVENTS.REGISTER, instance);
-		await setDefaultTab(instance);
-	} else {
-		window.api.send(INSTANCE_EVENTS.REMOVE);
-		await setDefaultTab();
+	if (!instancePanel || !isParentNode(instancePanel)) {
+		return;
 	}
 
-	resetTabs();
+	const colorPickerEl = typedQuerySelector(
+		"sl-color-picker",
+		SlColorPicker,
+		instancePanel,
+	);
+	if (colorPickerEl) {
+		colorPickerEl.value = color || "";
+		colorPickerEl.addEventListener("sl-blur", () => {
+			instance.color = colorPickerEl.getFormattedValue("hsla");
 
-	if (instanceSaveButton) {
-		instanceSaveButton.setAttribute("variant", "success");
-		instanceSaveButton.innerText = "Saved!";
-		setTimeout(() => {
-			instanceSaveButton.removeAttribute("variant");
-			instanceSaveButton.innerText = "Save";
-		}, 1200);
+			registerInstance(instance);
+		});
 	}
+
+	const labelEl = typedQuerySelector(".label", EditableText, instancePanel);
+	if (labelEl) {
+		labelEl.innerText = label || "";
+		labelEl.addEventListener(
+			"change",
+			(/**@type {CustomEventInit} */ { detail: { value } }) => {
+				instance.label = value;
+
+				registerInstance(instance);
+			},
+		);
+	}
+
+	const hintEl = typedQuerySelector(".hint", EditableText, instancePanel);
+	if (hintEl) {
+		hintEl.innerText = origin;
+		hintEl.addEventListener(
+			"change",
+			(/**@type {CustomEventInit} */ { detail: { value } }) => {
+				instance.origin = value;
+
+				registerInstance(instance);
+			},
+		);
+	}
+
+	const buttonDeleteEl = typedQuerySelector(
+		"sl-button",
+		SlButton,
+		instancePanel,
+	);
+	if (buttonDeleteEl) {
+		buttonDeleteEl.disabled = isDefault;
+		buttonDeleteEl.addEventListener("click", () => {
+			window.api.send(INSTANCE_EVENTS.REMOVE, id);
+			updateInstanceList();
+		});
+	}
+
+	const panelElement = typedQuerySelector(".panel", HTMLElement, instancePanel);
+	if (panelElement) {
+		panelElement.addEventListener("contextmenu", async () => {
+			await disableSettingsFocusTrap();
+
+			showContextMenu(panelElement, [
+				{
+					label: "Set as default",
+					onClick: () => {
+						setDefaultTab(origin, {
+							accentColor: color,
+							partition: id,
+						});
+						window.api.send(INSTANCE_EVENTS.SET_DEFAULT, id);
+						hideContextMenu();
+						updateInstanceList();
+						enableSettingsFocusTrap();
+					},
+				},
+			]);
+		});
+	}
+
+	return instancePanel;
 }
 
-async function getInstanceSettingsForm() {
-	const instanceForm = await getIncludedElement(
-		"#instance-form",
+async function getInstanceSettingsElements() {
+	const instanceList = await getIncludedElement(
+		"#instance-list",
 		"#include-settings",
-		HTMLFormElement,
+		HTMLDivElement,
 	);
-	const instanceField = await getIncludedElement(
-		"#instance-field",
+	const instancePanelTemplate = await getIncludedElement(
+		"#template-instance-panel",
 		"#include-settings",
-		SlInput,
+		HTMLTemplateElement,
 	);
-	const instanceSaveButton = await getIncludedElement(
-		"#instance-save",
+	const instanceButtonAdd = await getIncludedElement(
+		"#instance-add",
 		"#include-settings",
 		SlButton,
 	);
 
-	return { instanceForm, instanceField, instanceSaveButton };
+	return { instanceList, instancePanelTemplate, instanceButtonAdd };
+}
+
+/**
+ * @param {Partial<Instances[number]>} instance
+ */
+function registerInstance(instance) {
+	const { origin, color, isDefault } = instance;
+
+	window.api.send(INSTANCE_EVENTS.REGISTER, {
+		...DEFAULT_INSTANCE,
+		...instance,
+	});
+
+	if (isDefault) {
+		setDefaultTab(origin, {
+			accentColor: color,
+		});
+	}
 }

@@ -1,3 +1,5 @@
+import { DEFAULT_INSTANCE } from "../../shared/instance.js";
+import { hideContextMenu, showContextMenu } from "./contextMenu.js";
 import { getIncludedElement, typedQuerySelector } from "./dom.js";
 import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
 
@@ -5,12 +7,15 @@ import { handleInTabThemeUpdate, THEME_TAB_EVENTS } from "./theme.js";
  * @typedef {import("electron-tabs").TabGroup} TabGroup
  * @typedef {import("electron-tabs").Tab} Tab
  * @typedef {import("electron").WebviewTag} WebviewTag
+ *
+ * @typedef {Object} TabOptions
+ * @property {string =} accentColor
+ * @property {string =} partition
  */
 
-const DEFAULT_INSTANCE = "https://design.penpot.app/";
 const PRELOAD_PATH = "./scripts/webviews/preload.mjs";
 const DEFAULT_TAB_OPTIONS = Object.freeze({
-	src: DEFAULT_INSTANCE,
+	src: DEFAULT_INSTANCE.origin,
 	active: true,
 	webviewAttributes: {
 		preload: PRELOAD_PATH,
@@ -33,30 +38,55 @@ export async function initTabs() {
 
 	window.api.onOpenTab(openTab);
 	window.api.onTabMenuAction(handleTabMenuAction);
-}
 
-export async function resetTabs() {
-	const tabGroup = await getTabGroup();
-	tabGroup?.eachTab((tab) => tab.close(false));
-	openTab();
-}
+	const addTabButton = typedQuerySelector(
+		".buttons > button",
+		HTMLButtonElement,
+		tabGroup?.shadow,
+	);
+	addTabButton?.addEventListener("contextmenu", async () => {
+		const instances = await window.api.getSetting("instances");
+		const hasMultipleInstances = instances.length > 1;
 
-/**
- * @param {string =} href
- */
-export async function setDefaultTab(href) {
-	const tabGroup = await getTabGroup();
+		if (!hasMultipleInstances) {
+			return;
+		}
 
-	tabGroup?.setDefaultTab({
-		...DEFAULT_TAB_OPTIONS,
-		...(href ? { src: href } : {}),
+		const menuItems = instances.map(({ id, origin, label, color }) => ({
+			label: label || origin,
+			onClick: () => {
+				openTab(origin, { accentColor: color, partition: id });
+				hideContextMenu();
+			},
+		}));
+
+		showContextMenu(addTabButton, menuItems);
 	});
 }
 
 /**
  * @param {string =} href
+ * @param {TabOptions} options
  */
-export async function openTab(href) {
+export async function setDefaultTab(href, { accentColor, partition } = {}) {
+	const tabGroup = await getTabGroup();
+
+	tabGroup?.setDefaultTab({
+		...DEFAULT_TAB_OPTIONS,
+		...(href ? { src: href } : {}),
+		webviewAttributes: {
+			...DEFAULT_TAB_OPTIONS.webviewAttributes,
+			...(partition && { partition: `persist:${partition}` }),
+		},
+		ready: (tab) => tabReadyHandler(tab, { accentColor }),
+	});
+}
+
+/**
+ * @param {string =} href
+ * @param {TabOptions} options
+ */
+export async function openTab(href, { accentColor, partition } = {}) {
 	const tabGroup = await getTabGroup();
 
 	tabGroup?.addTab(
@@ -64,6 +94,13 @@ export async function openTab(href) {
 			? {
 					...DEFAULT_TAB_OPTIONS,
 					src: href,
+					webviewAttributes: {
+						...DEFAULT_TAB_OPTIONS.webviewAttributes,
+						...(partition && { partition: `persist:${partition}` }),
+					},
+					ready: (tab) => {
+						tabReadyHandler(tab, { accentColor });
+					},
 				}
 			: undefined,
 	);
@@ -84,9 +121,14 @@ async function prepareTabReloadButton() {
 
 /**
  * @param {Tab} tab
+ * @param {TabOptions} options
  */
-function tabReadyHandler(tab) {
+function tabReadyHandler(tab, { accentColor } = {}) {
 	const webview = /** @type {WebviewTag} */ (tab.webview);
+
+	if (accentColor) {
+		tab.element.style.setProperty("--tab-accent-color", accentColor);
+	}
 
 	tab.once("webview-dom-ready", () => {
 		tab.on("active", () => requestTabTheme(tab));
