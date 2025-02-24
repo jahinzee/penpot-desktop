@@ -139,6 +139,8 @@ function createInstancePanel(instance, template) {
 	const panelElement = typedQuerySelector(".panel", HTMLElement, instancePanel);
 	if (panelElement) {
 		panelElement.addEventListener("contextmenu", async () => {
+			const { id, origin, color } = instance;
+
 			await disableSettingsFocusTrap();
 
 			showContextMenu(panelElement, [
