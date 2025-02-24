@@ -53,6 +53,15 @@
         <internet>offline-only</internet>
     </supports>
     <releases>
+				<release version="v0.11.0" date="2025-02-24">
+            <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.11.0</url>
+            <description>
+								<p>Features</p>
+								<ul>
+										<li>Added support for multiple instances.</li>
+								</ul>
+            </description>
+        </release>
 				<release version="v0.10.0" date="2025-01-26">
             <url type="details">https://github.com/author-more/penpot-desktop/releases/tag/v0.10.0</url>
             <description>
