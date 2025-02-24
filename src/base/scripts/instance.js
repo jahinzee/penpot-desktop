@@ -26,6 +26,7 @@ export async function initInstance() {
 
 	await setDefaultTab(origin, {
 		accentColor: color,
+		partition: id,
 	});
 	openTab(origin, {
 		accentColor: color,
@@ -138,6 +139,8 @@ function createInstancePanel(instance, template) {
 	const panelElement = typedQuerySelector(".panel", HTMLElement, instancePanel);
 	if (panelElement) {
 		panelElement.addEventListener("contextmenu", async () => {
+			const { id, origin, color } = instance;
+
 			await disableSettingsFocusTrap();
 
 			showContextMenu(panelElement, [
@@ -185,7 +188,7 @@ async function getInstanceSettingsElements() {
  * @param {Partial<Instances[number]>} instance
  */
 function registerInstance(instance) {
-	const { origin, color, isDefault } = instance;
+	const { id, origin, color, isDefault } = instance;
 
 	window.api.send(INSTANCE_EVENTS.REGISTER, {
 		...DEFAULT_INSTANCE,
@@ -195,6 +198,7 @@ function registerInstance(instance) {
 	if (isDefault) {
 		setDefaultTab(origin, {
 			accentColor: color,
+			partition: id,
 		});
 	}
 }

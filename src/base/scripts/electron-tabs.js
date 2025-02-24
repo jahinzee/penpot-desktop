@@ -197,17 +197,30 @@ async function handleTabMenuAction({ command, tabId }) {
 	const tabGroup = await getTabGroup();
 	const tab = tabGroup?.getTab(tabId);
 
+	if (!tab) {
+		return;
+	}
+
 	if (command === "reload-tab") {
-		/** @type {WebviewTag} */ (tab?.webview)?.reload();
+		/** @type {WebviewTag} */ (tab.webview).reload();
 	}
 
 	if (command === "duplicate-tab") {
-		const url = /** @type {WebviewTag} */ (tab?.webview)?.getURL();
-		openTab(url);
+		const webview = /** @type {WebviewTag} */ (tab.webview);
+		const url = webview.getURL();
+		const { partition } = webview;
+		const [, id] = partition.split(":");
+		const accentColor =
+			tab.element.style.getPropertyValue("--tab-accent-color");
+
+		openTab(url, {
+			accentColor,
+			partition: id,
+		});
 	}
 
 	if (command.startsWith("close-tabs-")) {
-		const pivotPosition = tab?.getPosition();
+		const pivotPosition = tab.getPosition();
 
 		/** @type {-1 | 0| 1} */
 		let direction;
