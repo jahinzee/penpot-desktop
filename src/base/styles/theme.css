@@ -1,0 +1,7 @@
+sl-color-picker {
+	--sl-input-height-small: 16px;
+
+	&::part(trigger) {
+		border-radius: var(--sl-border-radius-medium);
+	}
+}

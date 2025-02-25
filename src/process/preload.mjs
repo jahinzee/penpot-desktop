@@ -14,8 +14,9 @@ contextBridge.exposeInMainWorld(
 				"MinimizeWindow",
 				"OpenHelp",
 				"OpenOffline",
-				"registerInstance",
-				"removeInstance",
+				"instance:register",
+				"instance:remove",
+				"instance:setDefault",
 				"openTabMenu",
 			];
 

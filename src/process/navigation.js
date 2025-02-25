@@ -4,14 +4,10 @@ import { join } from "path";
 import { toMultiline } from "./string.js";
 import { getMainWindow } from "./window.js";
 import { settings } from "./settings.js";
+import { INSTANCE_EVENTS } from "../shared/instance.js";
 
-// Covered origins and URLs are scoped to the Penpot Desktop app (e.g. Penpot instances that can be opened) and the Penpot web app (e.g. links in the Menu > Help & info).
-const OFFICIAL_INSTANCE_ORIGINS = Object.freeze([
-	"https://design.penpot.app",
-	"https://early.penpot.dev",
-]);
+// Covered origins and URLs are scoped to the Penpot web app (e.g. links in the Menu > Help & info).
 const ALLOWED_INTERNAL_ORIGINS = Object.freeze([
-	...OFFICIAL_INSTANCE_ORIGINS,
 	"https://penpot.app",
 	"https://help.penpot.app",
 ]);
@@ -26,21 +22,45 @@ const ALLOWED_EXTERNAL_URLS = Object.freeze([
 	"https://github.com/penpot/penpot",
 ]);
 
-ipcMain.on("registerInstance", (event, instance) => {
-	try {
-		const { origin } = new URL(instance);
-		settings.instances = [{ origin }];
-	} catch (error) {
-		console.error(`[ERROR] [IPC.registerInstance] Failed with: ${instance}`);
+ipcMain.on(INSTANCE_EVENTS.REGISTER, (event, instance) => {
+	const { id, origin } = instance;
+	const hasValidOrigin = URL.canParse(origin);
+	if (hasValidOrigin) {
+		const instanceIndex = settings.instances.findIndex(
+			({ id: registeredId }) => registeredId === id,
+		);
+		if (instanceIndex > -1) {
+			settings.instances = settings.instances.toSpliced(
+				instanceIndex,
+				1,
+				instance,
+			);
+			return;
+		}
+
+		settings.instances = [...settings.instances, instance];
+	} else {
+		console.warn(
+			`[WARN] [IPC.${INSTANCE_EVENTS.REGISTER}] Failed with: ${origin}`,
+		);
 	}
 });
 
-ipcMain.on("removeInstance", (event, instance) => {
-	try {
-		settings.instances = [];
-	} catch (error) {
-		console.error(`[ERROR] [IPC.removeInstance] Failed with: ${instance}`);
-	}
+ipcMain.on(INSTANCE_EVENTS.REMOVE, (event, id) => {
+	const userDataPath = app.getPath("sessionData");
+	const partitionPath = join(userDataPath, "Partitions", id);
+
+	shell.trashItem(partitionPath);
+	settings.instances = settings.instances.filter(
+		({ id: registeredId }) => registeredId !== id,
+	);
+});
+
+ipcMain.on(INSTANCE_EVENTS.SET_DEFAULT, (event, id) => {
+	settings.instances = settings.instances.map((instance) => {
+		instance.isDefault = instance.id === id ? true : false;
+		return instance;
+	});
 });
 
 app.on("web-contents-created", (event, contents) => {
@@ -133,10 +153,7 @@ app.on("web-contents-created", (event, contents) => {
 			console.log("Clear non-instance origins data.");
 
 			contents.session.clearData({
-				excludeOrigins: [
-					...OFFICIAL_INSTANCE_ORIGINS,
-					...getUserInstanceOrigins(settings),
-				],
+				excludeOrigins: [...getUserInstanceOrigins(settings)],
 			});
 		}
 	});

@@ -1,0 +1,18 @@
+.context-menu {
+	display: none;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: var(--sl-z-index-dialog);
+
+	&.visible {
+		display: block;
+	}
+
+	& .menu {
+		position: absolute;
+		max-width: 200px;
+	}
+}

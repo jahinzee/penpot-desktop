@@ -3,7 +3,8 @@
 
 	&::part(body) {
 		display: grid;
-		align-content: space-between;
+		align-content: start;
+		row-gap: var(--sl-spacing-large);
 	}
 
 	&::part(panel) {
@@ -16,8 +17,46 @@
 		box-shadow: unset;
 	}
 
-	.footer {
+	sl-button-group {
 		display: grid;
 		place-content: center;
+	}
+}
+
+.panel-list {
+	display: grid;
+	row-gap: var(--sl-spacing-small);
+
+	.list {
+		display: grid;
+		row-gap: var(--sl-spacing-small);
+	}
+
+	> sl-button {
+		width: 100%;
+	}
+}
+
+.panel {
+	display: grid;
+	grid-template-columns: min-content auto min-content;
+	align-items: center;
+
+	gap: var(--sl-spacing-small);
+	padding: var(--sl-spacing-2x-small) var(--sl-spacing-x-small);
+
+	background-color: var(--sl-color-neutral-0);
+	border: var(--sl-panel-border-width) var(--sl-panel-border-color) solid;
+
+	.label,
+	.hint {
+		margin: var(--sl-spacing-2x-small) auto;
+	}
+
+	.label {
+		font-size: var(--sl-font-size-small);
+	}
+	.hint {
+		font-size: var(--sl-font-size-x-small);
 	}
 }
